@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd advocate-company && npm run build",
+  "installCommand": "cd advocate-company && npm install",
+  "framework": "nextjs"
+}
+
