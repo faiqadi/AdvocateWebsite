@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import ScrollAnimation from './ScrollAnimation';
 
 const features = [
   {
@@ -32,22 +35,23 @@ export default function FeaturesSection() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Kami memecahkan masalah hukum yang rumit #dengan mudah.
-          </h2>
+          <ScrollAnimation direction="up">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Kami memecahkan masalah hukum yang rumit #dengan mudah.
+            </h2>
+          </ScrollAnimation>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {features.map((feature) => (
-            <div
-              key={feature.id}
-              className="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition-shadow"
-            >
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-700">{feature.description}</p>
-            </div>
+          {features.map((feature, index) => (
+            <ScrollAnimation key={feature.id} direction="up" delay={index * 100}>
+              <div className="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-700">{feature.description}</p>
+              </div>
+            </ScrollAnimation>
           ))}
         </div>
       </div>

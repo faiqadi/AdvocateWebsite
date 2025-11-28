@@ -28,10 +28,6 @@ export default function Navigation() {
       submenu: [{ name: 'Tentang Kami', href: '/law-firm/tentang-kami' }],
     },
     {
-      name: 'Bagus Academy',
-      href: '/ls-academy',
-    },
-    {
       name: 'Knowledge Center',
       href: '/knowledge-center',
       submenu: [
@@ -63,17 +59,6 @@ export default function Navigation() {
         { name: 'Pelayaran', href: '/practice-areas#pelayaran' },
         { name: 'Penerbangan', href: '/practice-areas#penerbangan' },
         { name: 'Ketenagakerjaan', href: '/practice-areas#ketenagakerjaan' },
-      ],
-    },
-    {
-      name: 'Specialist',
-      href: '/specialist',
-      submenu: [
-        { name: 'Akuntan Publik', href: '/specialist#akuntan-publik' },
-        { name: 'Kurator', href: '/specialist#kurator' },
-        { name: 'Konsultan Pajak', href: '/specialist#konsultan-pajak' },
-        { name: 'Konsultan Perizinan', href: '/specialist#konsultan-perizinan' },
-        { name: 'Penerjemah Tersumpah', href: '/specialist#penerjemah-tersumpah' },
       ],
     },
     {
@@ -127,7 +112,6 @@ export default function Navigation() {
                   className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                     pathname === item.href || 
                     pathname?.startsWith(item.href + '/') ||
-                    (item.href === '/specialist' && pathname?.startsWith('/specialist')) ||
                     (item.href === '/practice-areas' && pathname?.startsWith('/practice-areas'))
                       ? 'text-blue-900 bg-blue-50 font-semibold'
                       : 'text-gray-700 hover:text-blue-900 hover:bg-gray-50'

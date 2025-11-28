@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import ScrollAnimation from './ScrollAnimation';
 
 const practiceAreas = [
   {
@@ -80,32 +83,35 @@ export default function PracticeAreasSection() {
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Wilayah Praktek
-          </h2>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-            Tim terbaik dari kantor kami memberikan analisa, nasehat serta
-            tindakan hukum secara profesional.
-          </p>
+          <ScrollAnimation direction="up">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Wilayah Praktek
+            </h2>
+          </ScrollAnimation>
+          <ScrollAnimation direction="up" delay={100}>
+            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+              Tim terbaik dari kantor kami memberikan analisa, nasehat serta
+              tindakan hukum secara profesional.
+            </p>
+          </ScrollAnimation>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {practiceAreas.map((area) => (
-            <div
-              key={area.id}
-              className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
-            >
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                {area.title}
-              </h3>
-              <p className="text-gray-700 mb-4">{area.description}</p>
-              <Link
-                href="/practice-areas"
-                className="text-blue-900 font-semibold hover:underline"
-              >
-                Detail →
-              </Link>
-            </div>
+          {practiceAreas.map((area, index) => (
+            <ScrollAnimation key={area.id} direction="up" delay={index * 50}>
+              <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {area.title}
+                </h3>
+                <p className="text-gray-700 mb-4">{area.description}</p>
+                <Link
+                  href="/practice-areas"
+                  className="text-blue-900 font-semibold hover:underline"
+                >
+                  Detail →
+                </Link>
+              </div>
+            </ScrollAnimation>
           ))}
         </div>
       </div>
