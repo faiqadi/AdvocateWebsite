@@ -4,11 +4,11 @@ import ScrollAnimation from './ScrollAnimation';
 
 export default function TentangKantorSection() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white dark:bg-gray-900 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <ScrollAnimation direction="up">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Tentang Kantor
             </h2>
           </ScrollAnimation>
@@ -17,18 +17,18 @@ export default function TentangKantorSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <ScrollAnimation direction="left" delay={100}>
             <div className="space-y-6">
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                 Bagus Law Firm yang sekarang kami menyebut dengan penamaan
-                <span className="font-semibold text-blue-900"> BAGUS LAW</span> merupakan salah satu firma hukum yang berbentuk badan hukum
+                <span className="font-semibold text-blue-900 dark:text-blue-400"> BAGUS LAW</span> merupakan salah satu firma hukum yang berbentuk badan hukum
                 yang telah dikenal oleh masyarakat luas.
               </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                 Kami telah memiliki pengalaman lebih dari satu dekade baik pada
                 pengalaman domestik maupun internasional yang berfokus pada pelayanan
                 dan pengembangan segala transaksi hukum perusahaan diberbagai sektor
                 industri.
               </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                 Lawfirm kami memiliki para konsultan hukum dan para lawyer yang ahli
                 di bidangnya untuk menjawab tantangan global terutama pada sektor
                 industri.

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function TentangKamiPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
       <Navigation />
       
       {/* Hero Section */}
@@ -27,7 +27,7 @@ export default function TentangKamiPage() {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="space-y-6 text-gray-700 leading-relaxed">
+        <div className="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed">
           <p className="text-base md:text-lg">
             Bagus Law Firm merupakan perusahaan yang bergerak dalam bidang
             jasa pelayanan konsultasi hukum serta penanganan perkara hukum,

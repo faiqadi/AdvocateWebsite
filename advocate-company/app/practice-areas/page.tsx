@@ -57,7 +57,7 @@ export default function PracticeAreasPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
       <Navigation />
       
       {/* Hero Section */}
@@ -73,7 +73,7 @@ export default function PracticeAreasPage() {
 
       {/* Practice Areas Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
           Bidang praktik utama kami meliputi:
         </h2>
         
@@ -81,21 +81,21 @@ export default function PracticeAreasPage() {
           {practiceAreas.map((area, index) => (
             <div
               key={index}
-              className="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition-shadow border border-gray-200"
+              className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
             >
-              <h3 className="text-lg font-bold text-gray-900">{area}</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{area}</h3>
             </div>
           ))}
         </div>
       </div>
 
       {/* Consultation Section */}
-      <div className="bg-gray-50 py-16">
+      <div className="bg-gray-50 dark:bg-gray-800 py-16 transition-colors duration-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
             Jadwalkan Konsultasi dengan Pengacara Profesional
           </h2>
-          <p className="text-lg text-gray-700 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
             Tim kami akan memberikan respons secara profesional dan segera membantu
             Anda dalam mengatur waktu konsultasi yang sesuai dengan kebutuhan Anda,
             serta memastikan seluruh proses berlangsung dengan efisien dan terkoordinasi.
@@ -110,16 +110,16 @@ export default function PracticeAreasPage() {
       </div>
 
       {/* Practice Areas Footer Section */}
-      <div className="bg-white py-12">
+      <div className="bg-white dark:bg-gray-900 py-12 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <p className="text-gray-700 text-base md:text-lg max-w-3xl mx-auto mb-8">
+            <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg max-w-3xl mx-auto mb-8">
               Lawfirm kami telah bekerja dengan banyak perusahaan domestik dan
               internasional di berbagai sektor sehingga menciptakan dan memberikan
               solusi yang efektif serta berfokus pada pengembangan segala transaksi
               bisnis dan investasi bagi para klien.
             </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">
               Practice Areas
             </h2>
           </div>
@@ -128,11 +128,11 @@ export default function PracticeAreasPage() {
             {footerPracticeAreas.map((area, index) => (
               <div
                 key={index}
-                className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <Link
                   href="/practice-areas"
-                  className="text-gray-700 hover:text-blue-900 transition-colors text-sm block"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors text-sm block"
                 >
                   {area}
                 </Link>

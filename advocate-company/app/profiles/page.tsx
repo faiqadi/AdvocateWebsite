@@ -187,7 +187,7 @@ export default function ProfilesPage() {
       : profiles.filter((profile) => profile.category === activeFilter);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
       <Navigation />
       
       {/* Hero Section */}
@@ -213,7 +213,7 @@ export default function ProfilesPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-white border-b sticky top-16 z-40">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-16 z-40 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap gap-2 py-4 overflow-x-auto">
             {filters.map((filter) => (
@@ -222,8 +222,8 @@ export default function ProfilesPage() {
                 onClick={() => setActiveFilter(filter.id)}
                 className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors whitespace-nowrap ${
                   activeFilter === filter.id
-                    ? 'bg-blue-900 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-900 dark:bg-blue-800 text-white'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 {filter.label}
@@ -239,7 +239,7 @@ export default function ProfilesPage() {
           {filteredProfiles.map((profile) => (
             <div
               key={profile.id}
-              className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 relative group"
+              className="bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 relative group"
             >
               {/* Star Icon */}
               <div className="absolute bottom-2 right-2 z-10">
@@ -270,14 +270,14 @@ export default function ProfilesPage() {
 
               {/* Profile Info */}
               <div className="p-4">
-                <h3 className="font-bold text-gray-900 text-sm mb-1 line-clamp-2">
+                <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">
                   {profile.name}
                 </h3>
-                <p className="text-gray-600 text-xs">{profile.title}</p>
+                <p className="text-gray-600 dark:text-gray-400 text-xs">{profile.title}</p>
                 {profile.email && (
                   <a
                     href={`mailto:${profile.email}`}
-                    className="text-blue-900 text-xs hover:underline mt-1 block"
+                    className="text-blue-900 dark:text-blue-400 text-xs hover:underline mt-1 block"
                   >
                     {profile.email}
                   </a>
@@ -289,7 +289,7 @@ export default function ProfilesPage() {
 
         {filteredProfiles.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No profiles found in this category.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">No profiles found in this category.</p>
           </div>
         )}
       </div>

@@ -74,7 +74,7 @@ export default function KnowledgeCenterPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
       <Navigation />
       
       {/* Hero Section */}
@@ -91,9 +91,9 @@ export default function KnowledgeCenterPage() {
           <div className="lg:col-span-2">
             {/* News Section */}
             <section className="mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">News</h2>
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                <p className="text-gray-600 italic">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">News</h2>
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                <p className="text-gray-600 dark:text-gray-400 italic">
                   The current query has no posts. Please make sure you have published items matching your query.
                 </p>
               </div>
@@ -101,24 +101,24 @@ export default function KnowledgeCenterPage() {
 
             {/* Articles Section */}
             <section>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Articles</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">Articles</h2>
               <div className="space-y-6">
                 {articles.map((article) => (
                   <article
                     key={article.id}
-                    className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <span className="text-sm font-semibold text-blue-900">
+                      <span className="text-sm font-semibold text-blue-900 dark:text-blue-400">
                         {article.category}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-900 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 hover:text-blue-900 dark:hover:text-blue-400 transition-colors">
                       <Link href={`/knowledge-center/articles/${article.id}`}>
                         {article.title}
                       </Link>
                     </h3>
-                    <div className="flex items-center text-sm text-gray-500 space-x-4">
+                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
                       <span>•</span>
                       <time>{article.date}</time>
                       <span>•</span>
@@ -132,7 +132,7 @@ export default function KnowledgeCenterPage() {
               <div className="mt-8 text-center">
                 <Link
                   href="/knowledge-center/articles"
-                  className="inline-block text-blue-900 font-semibold hover:underline"
+                  className="inline-block text-blue-900 dark:text-blue-400 font-semibold hover:underline"
                 >
                   See More &gt;&gt;
                 </Link>
@@ -142,13 +142,13 @@ export default function KnowledgeCenterPage() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-50 rounded-lg p-6 sticky top-20">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Links</h3>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 sticky top-20">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Links</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/knowledge-center/news"
-                    className="text-gray-700 hover:text-blue-900 transition-colors"
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors"
                   >
                     News
                   </Link>
@@ -156,7 +156,7 @@ export default function KnowledgeCenterPage() {
                 <li>
                   <Link
                     href="/knowledge-center/articles"
-                    className="text-gray-700 hover:text-blue-900 transition-colors"
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors"
                   >
                     Articles
                   </Link>

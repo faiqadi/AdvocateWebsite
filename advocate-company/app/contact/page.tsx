@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
       <Navigation />
       
       {/* Hero Section */}
@@ -33,7 +33,7 @@ export default function ContactPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Semarang Office */}
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">SEMARANG</h2>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">SEMARANG</h2>
           
           {/* Map - Wide and Centered */}
           <div className="w-full h-96 lg:h-[500px] rounded-lg overflow-hidden shadow-lg mb-8">
@@ -51,39 +51,39 @@ export default function ContactPage() {
 
           {/* Location Details - Below Map */}
           <div className="text-center space-y-4">
-            <p className="text-gray-700 text-lg">
+            <p className="text-gray-700 dark:text-gray-300 text-lg">
               Gedung <strong>BAGUS TOWER</strong>
               </p>
-              <p className="text-gray-700">
+              <p className="text-gray-700 dark:text-gray-300">
                 Jl. Contoh No. 123
                 <br />
                 Kecamatan Contoh, Semarang, Jawa Tengah 50123
             </p>
             
             <ul className="space-y-2 mt-6 flex flex-col items-center">
-              <li className="text-gray-700">
+              <li className="text-gray-700 dark:text-gray-300">
                 <span className="font-semibold">Ph</span>{' '}
                 <a
                   href="tel:+621234567890"
-                  className="text-blue-900 hover:underline"
+                  className="text-blue-900 dark:text-blue-400 hover:underline"
                 >
                   +62 123 456 7890
                 </a>
               </li>
-              <li className="text-gray-700">
+              <li className="text-gray-700 dark:text-gray-300">
                 <span className="font-semibold">Email</span>{' '}
                 <a
                   href="mailto:info@baguslawfirm.com"
-                  className="text-blue-900 hover:underline"
+                  className="text-blue-900 dark:text-blue-400 hover:underline"
                 >
                   info@baguslawfirm.com
                 </a>
               </li>
-              <li className="text-gray-700">
+              <li className="text-gray-700 dark:text-gray-300">
                 <span className="font-semibold">Telp</span>{' '}
                 <a
                   href="tel:0241234567"
-                  className="text-blue-900 hover:underline"
+                  className="text-blue-900 dark:text-blue-400 hover:underline"
                 >
                   024-1234567
                 </a>
@@ -93,7 +93,7 @@ export default function ContactPage() {
                   href="https://maps.google.com/?q=Jl+Contoh+No+123+Semarang"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-900 hover:underline font-semibold"
+                  className="text-blue-900 dark:text-blue-400 hover:underline font-semibold"
                 >
                   Lihat Map
                 </Link>
@@ -107,7 +107,7 @@ export default function ContactPage() {
           <div className="flex justify-center items-center space-x-6">
             <Link
               href="#"
-              className="text-gray-700 hover:text-blue-900 transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors"
               aria-label="LinkedIn"
             >
               <svg
@@ -121,7 +121,7 @@ export default function ContactPage() {
             </Link>
             <Link
               href="#"
-              className="text-gray-700 hover:text-blue-900 transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors"
               aria-label="Instagram"
             >
               <svg
