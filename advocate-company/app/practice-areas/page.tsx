@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Navigation from '../components/Navigation';
 import Link from 'next/link';
+import { getBuildingImage } from '@/lib/building-images';
 
 // Lazy load Footer since it's at the bottom
 const Footer = dynamic(() => import('../components/Footer'), {
@@ -57,11 +58,21 @@ export default function PracticeAreasPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-      <Navigation />
-      
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-16">
+    <div 
+      className="min-h-screen relative transition-colors duration-200"
+      style={{
+        backgroundImage: `url(${getBuildingImage(3)})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <div className="absolute inset-0 bg-gray-900/60 dark:bg-gray-900/90"></div>
+      <div className="relative z-10">
+        <Navigation />
+        
+        {/* Hero Section */}
+        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-gray-900 dark:text-white py-16 border-b border-gray-300/50 dark:border-gray-700/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-lg md:text-xl leading-relaxed">
             Telusuri bidang praktik unggulan kami untuk mengetahui bagaimana kami
@@ -72,25 +83,44 @@ export default function PracticeAreasPage() {
       </div>
 
       {/* Practice Areas Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          Bidang praktik utama kami meliputi:
-        </h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+        <div className="text-center mb-8">
+          <div className="inline-block bg-white/90 dark:bg-transparent backdrop-blur-sm rounded-lg px-8 py-4 shadow-lg border border-gray-200/50 dark:border-transparent">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-0">
+              Bidang praktik utama kami meliputi:
+            </h2>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {practiceAreas.map((area, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
-            >
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{area}</h3>
-            </div>
-          ))}
+          {practiceAreas.map((area, index) => {
+            // Create slug from area name
+            const slug = area
+              .toLowerCase()
+              .replace(/[&]/g, 'dan')
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '');
+            
+            return (
+              <Link
+                key={index}
+                href={`/practice-areas/${slug}`}
+                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-6 hover:shadow-2xl transition-all duration-300 border border-gray-300/50 dark:border-gray-700/50 hover:border-blue-500 group"
+              >
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {area}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  Klik untuk detail →
+                </p>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
       {/* Consultation Section */}
-      <div className="bg-gray-50 dark:bg-gray-800 py-16 transition-colors duration-200">
+      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-16 border-y border-gray-300/50 dark:border-gray-700/50 relative z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
             Jadwalkan Konsultasi dengan Pengacara Profesional
@@ -102,7 +132,7 @@ export default function PracticeAreasPage() {
           </p>
           <Link
             href="/contact"
-            className="inline-block bg-blue-900 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-800 transition-colors"
+            className="inline-block bg-blue-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700 transition-colors"
           >
             Click Here
           </Link>
@@ -110,7 +140,7 @@ export default function PracticeAreasPage() {
       </div>
 
       {/* Practice Areas Footer Section */}
-      <div className="bg-white dark:bg-gray-900 py-12 transition-colors duration-200">
+      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-12 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg max-w-3xl mx-auto mb-8">
@@ -128,11 +158,11 @@ export default function PracticeAreasPage() {
             {footerPracticeAreas.map((area, index) => (
               <div
                 key={index}
-                className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-gray-300/50 dark:border-gray-700/50"
               >
                 <Link
                   href="/practice-areas"
-                  className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors text-sm block"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm block"
                 >
                   {area}
                 </Link>
@@ -143,6 +173,7 @@ export default function PracticeAreasPage() {
       </div>
 
       <Footer />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import { getBuildingImage } from '@/lib/building-images';
 
 const heroSlides = [
   {
@@ -63,6 +64,8 @@ export default function HeroSection() {
     return () => clearInterval(timer);
   }, []);
 
+  const buildingImage = useMemo(() => getBuildingImage(0), []);
+
   useEffect(() => {
     const handleScroll = () => {
       if (parallaxRef.current) {
@@ -72,13 +75,25 @@ export default function HeroSection() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Throttle scroll events for better performance
+    let ticking = false;
+    const throttledHandleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', throttledHandleScroll);
   }, []);
 
-  const goToSlide = (index: number) => {
+  const goToSlide = useCallback((index: number) => {
     setCurrentSlide(index);
-  };
+  }, []);
 
   return (
     <div className="relative h-screen overflow-hidden">
@@ -87,11 +102,11 @@ export default function HeroSection() {
         ref={parallaxRef}
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&h=1080&fit=crop&q=80)',
+          backgroundImage: `url(${buildingImage})`,
           minHeight: '120%',
         }}
       >
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-gray-900/75"></div>
       </div>
 
       {/* Slides */}

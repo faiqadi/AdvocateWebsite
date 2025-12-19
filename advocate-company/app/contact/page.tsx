@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Navigation from '../components/Navigation';
 import Link from 'next/link';
+import { getBuildingImage } from '@/lib/building-images';
 
 // Lazy load Footer since it's at the bottom
 const Footer = dynamic(() => import('../components/Footer'), {
@@ -15,11 +16,21 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-      <Navigation />
-      
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-16">
+    <div 
+      className="min-h-screen relative transition-colors duration-200"
+      style={{
+        backgroundImage: `url(${getBuildingImage(4)})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <div className="absolute inset-0 bg-gray-900/60 dark:bg-gray-900/90"></div>
+      <div className="relative z-10">
+        <Navigation />
+        
+        {/* Hero Section */}
+        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-gray-900 dark:text-white py-16 border-b border-gray-300/50 dark:border-gray-700/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-lg md:text-xl leading-relaxed">
             Kami siap membantu Anda dengan layanan hukum yang cepat dan profesional.
@@ -30,7 +41,7 @@ export default function ContactPage() {
       </div>
 
       {/* Contact Information */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         {/* Semarang Office */}
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">SEMARANG</h2>
@@ -51,8 +62,8 @@ export default function ContactPage() {
 
           {/* Location Details - Below Map */}
           <div className="text-center space-y-4">
-            <p className="text-gray-700 dark:text-gray-300 text-lg">
-              Gedung <strong>BAGUS TOWER</strong>
+            <p className="text-gray-800 dark:text-gray-200 text-lg">
+              Gedung <strong className="text-gray-900 dark:text-white">BAGUS TOWER</strong>
               </p>
               <p className="text-gray-700 dark:text-gray-300">
                 Jl. Contoh No. 123
@@ -65,7 +76,7 @@ export default function ContactPage() {
                 <span className="font-semibold">Ph</span>{' '}
                 <a
                   href="tel:+621234567890"
-                  className="text-blue-900 dark:text-blue-400 hover:underline"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   +62 123 456 7890
                 </a>
@@ -74,7 +85,7 @@ export default function ContactPage() {
                 <span className="font-semibold">Email</span>{' '}
                 <a
                   href="mailto:info@baguslawfirm.com"
-                  className="text-blue-900 dark:text-blue-400 hover:underline"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   info@baguslawfirm.com
                 </a>
@@ -83,7 +94,7 @@ export default function ContactPage() {
                 <span className="font-semibold">Telp</span>{' '}
                 <a
                   href="tel:0241234567"
-                  className="text-blue-900 dark:text-blue-400 hover:underline"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   024-1234567
                 </a>
@@ -93,7 +104,7 @@ export default function ContactPage() {
                   href="https://maps.google.com/?q=Jl+Contoh+No+123+Semarang"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-900 dark:text-blue-400 hover:underline font-semibold"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                 >
                   Lihat Map
                 </Link>
@@ -107,7 +118,7 @@ export default function ContactPage() {
           <div className="flex justify-center items-center space-x-6">
             <Link
               href="#"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               aria-label="LinkedIn"
             >
               <svg
@@ -121,7 +132,7 @@ export default function ContactPage() {
             </Link>
             <Link
               href="#"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               aria-label="Instagram"
             >
               <svg
@@ -138,6 +149,7 @@ export default function ContactPage() {
       </div>
 
       <Footer />
+      </div>
     </div>
   );
 }

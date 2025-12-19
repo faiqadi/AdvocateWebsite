@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { getBuildingImage } from "@/lib/building-images";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +28,15 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 transition-colors duration-200`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 dark:bg-gray-950 transition-colors duration-200`}
+        style={{
+          backgroundImage: `url(${getBuildingImage(6)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
       >
+        <div className="fixed inset-0 bg-white/50 dark:bg-gray-900/70 pointer-events-none -z-10"></div>
         <ThemeProvider>
           {children}
           <FloatingWhatsApp />

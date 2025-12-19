@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTheme } from './ThemeProvider';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,7 +11,6 @@ export default function Navigation() {
   const [expandedMobileMenu, setExpandedMobileMenu] = useState<string | null>(null);
   const pathname = usePathname();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { theme, toggleTheme } = useTheme();
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -74,11 +73,11 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-200">
+    <nav className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-colors duration-200 border-b border-gray-300/50 dark:border-gray-700/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-blue-900 dark:text-blue-400">
+            <Link href="/" className="text-2xl font-bold text-gray-900 dark:text-white">
               BAGUS LAW
             </Link>
           </div>
@@ -111,12 +110,12 @@ export default function Navigation() {
               >
                 <Link
                   href={item.href}
-                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                     pathname === item.href || 
                     pathname?.startsWith(item.href + '/') ||
                     (item.href === '/practice-areas' && pathname?.startsWith('/practice-areas'))
-                      ? 'text-blue-900 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 font-semibold'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? 'text-white dark:text-white bg-blue-600 dark:bg-gray-800 font-semibold border border-blue-700 dark:border-gray-700'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
                   }`}
                 >
                   {item.name}
@@ -161,7 +160,7 @@ export default function Navigation() {
                       }, 200); // 200ms delay
                     }}
                   >
-                    <div className={`bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-200 dark:border-gray-700 ${
+                    <div className={`bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-md shadow-xl border border-gray-300/50 dark:border-gray-700/50 ${
                       item.name === 'Practice Areas' 
                         ? 'py-4 px-6' 
                         : 'py-2'
@@ -183,10 +182,10 @@ export default function Navigation() {
                                 <Link
                                   key={subItem.name}
                                   href={subItem.href}
-                                  className={`block py-2 text-sm transition-colors border-b border-yellow-200 dark:border-yellow-800 ${
+                                  className={`block py-2 text-sm transition-colors border-b border-gray-300/50 dark:border-gray-700/50 ${
                                     pathname === subItem.href
-                                      ? 'text-blue-900 dark:text-blue-400 font-semibold'
-                                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400'
+                                      ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:text-blue-600 dark:hover:text-blue-400'
                                   }`}
                                 >
                                   {subItem.name}
@@ -202,8 +201,8 @@ export default function Navigation() {
                             href={subItem.href}
                             className={`block px-4 py-3 text-sm transition-colors ${
                               pathname === subItem.href
-                                ? 'text-blue-900 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-900 dark:hover:text-blue-400'
+                                ? 'text-blue-600 dark:text-blue-400 bg-gray-200/50 dark:bg-gray-700/50 font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white'
                             }`}
                           >
                             {subItem.name}
@@ -215,51 +214,12 @@ export default function Navigation() {
                 )}
               </div>
             ))}
-            {/* Theme Toggle Button */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleTheme();
-              }}
-              className="px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-              aria-label="Toggle dark mode"
-              type="button"
-            >
-              {theme === 'dark' ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
-            </button>
+            {/* Theme Toggle */}
+            <ThemeToggle />
           </div>
 
-          {/* Mobile menu button and theme toggle */}
-          <div className="md:hidden flex items-center space-x-2">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleTheme();
-              }}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none p-2"
-              aria-label="Toggle dark mode"
-              type="button"
-            >
-              {theme === 'dark' ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
-            </button>
+          {/* Mobile menu button */}
+          <div className="md:hidden">
             <button
               onClick={() => {
                 setIsMenuOpen(!isMenuOpen);
@@ -267,7 +227,7 @@ export default function Navigation() {
                   setExpandedMobileMenu(null);
                 }
               }}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none"
+              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none"
             >
               <svg
                 className="h-6 w-6"
@@ -299,7 +259,7 @@ export default function Navigation() {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+          <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-300/50 dark:border-gray-700/50">
             {menuItems.map((item) => (
               <div key={item.name}>
                 {item.submenu ? (
@@ -312,8 +272,8 @@ export default function Navigation() {
                       }}
                       className={`w-full flex items-center justify-between px-3 py-2 text-base font-medium rounded-md ${
                         pathname === item.href || pathname?.startsWith(item.href + '/')
-                          ? 'text-blue-900 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 font-semibold'
-                          : 'text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                          ? 'text-white dark:text-white bg-blue-600 dark:bg-gray-800 font-semibold'
+                          : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
                       }`}
                     >
                       <span>{item.name}</span>
@@ -347,8 +307,8 @@ export default function Navigation() {
                             href={subItem.href}
                             className={`block px-3 py-2 text-sm rounded-md ${
                               pathname === subItem.href
-                                ? 'text-blue-900 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 font-semibold'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                ? 'text-blue-600 dark:text-blue-400 bg-gray-200/50 dark:bg-gray-800 font-semibold'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
                             }`}
                             onClick={() => {
                               setIsMenuOpen(false);
@@ -366,8 +326,8 @@ export default function Navigation() {
                     href={item.href}
                     className={`block px-3 py-2 text-base font-medium rounded-md ${
                       pathname === item.href
-                        ? 'text-blue-900 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 font-semibold'
-                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                        ? 'text-white dark:text-white bg-blue-600 dark:bg-gray-800 font-semibold'
+                        : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -376,6 +336,10 @@ export default function Navigation() {
                 )}
               </div>
             ))}
+            {/* Theme Toggle for Mobile */}
+            <div className="px-3 py-2">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       )}

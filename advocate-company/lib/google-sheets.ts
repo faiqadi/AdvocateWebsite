@@ -1,55 +1,56 @@
 /**
  * Google Sheets CMS Service
- * Handles reading and writing data to Google Sheets
+ * Handles reading and writing data to Google Sheets via Apps Script Web App
  */
 
-import { google } from 'googleapis';
-
-// Initialize Google Sheets API
-const auth = new google.auth.GoogleAuth({
-  credentials: {
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  },
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
-
-const sheets = google.sheets({ version: 'v4', auth });
-
-// Spreadsheet ID from environment variable
-const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID || '';
+// Web App URL from environment variable
+const WEB_APP_URL = process.env.GOOGLE_WEB_APP_URL || '';
 
 /**
  * Get all rows from a specific sheet
  */
-export async function getSheetData(sheetName: string): Promise<any[]> {
+export async function getSheetData(sheetName: string, params?: Record<string, string>): Promise<any[]> {
   try {
-    if (!SPREADSHEET_ID) {
-      console.warn('GOOGLE_SPREADSHEET_ID not set, returning empty array');
+    if (!WEB_APP_URL) {
+      console.warn('GOOGLE_WEB_APP_URL not set, returning empty array');
       return [];
     }
 
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${sheetName}!A:Z`,
+    // Build query parameters
+    const queryParams = new URLSearchParams({
+      sheet: sheetName,
+      action: 'get',
+      ...params,
     });
 
-    const rows = response.data.values;
-    if (!rows || rows.length === 0) {
+    const response = await fetch(`${WEB_APP_URL}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
       return [];
     }
 
-    // First row is headers
-    const headers = rows[0];
-    const data = rows.slice(1).map((row) => {
-      const obj: any = {};
-      headers.forEach((header, index) => {
-        obj[header] = row[index] || '';
-      });
-      return obj;
-    });
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 200)}`);
+      return [];
+    }
 
-    return data;
+    const result = await response.json();
+
+    if (!result.success) {
+      console.error(`Error from Web App: ${result.message}`);
+      return [];
+    }
+
+    return result.data || [];
   } catch (error) {
     console.error(`Error fetching data from sheet ${sheetName}:`, error);
     return [];
@@ -59,23 +60,36 @@ export async function getSheetData(sheetName: string): Promise<any[]> {
 /**
  * Append a row to a specific sheet
  */
-export async function appendRow(sheetName: string, rowData: any[]): Promise<boolean> {
+export async function appendRow(sheetName: string, rowData: Record<string, any>): Promise<boolean> {
   try {
-    if (!SPREADSHEET_ID) {
-      console.error('GOOGLE_SPREADSHEET_ID not set');
+    if (!WEB_APP_URL) {
+      console.error('GOOGLE_WEB_APP_URL not set');
       return false;
     }
 
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${sheetName}!A:Z`,
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [rowData],
+    const response = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      body: JSON.stringify({
+        sheet: sheetName,
+        action: 'append',
+        data: rowData,
+      }),
     });
 
-    return true;
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 200)}`);
+      return false;
+    }
+
+    const result = await response.json();
+    return result.success === true;
   } catch (error) {
     console.error(`Error appending row to sheet ${sheetName}:`, error);
     return false;
@@ -83,29 +97,43 @@ export async function appendRow(sheetName: string, rowData: any[]): Promise<bool
 }
 
 /**
- * Update a row in a specific sheet
+ * Update a row in a specific sheet by ID
  */
 export async function updateRow(
   sheetName: string,
-  rowIndex: number,
-  rowData: any[]
+  id: string,
+  rowData: Record<string, any>
 ): Promise<boolean> {
   try {
-    if (!SPREADSHEET_ID) {
-      console.error('GOOGLE_SPREADSHEET_ID not set');
+    if (!WEB_APP_URL) {
+      console.error('GOOGLE_WEB_APP_URL not set');
       return false;
     }
 
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${sheetName}!A${rowIndex + 2}:Z${rowIndex + 2}`, // +2 because row 1 is header, and rowIndex is 0-based
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [rowData],
+    const response = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      body: JSON.stringify({
+        sheet: sheetName,
+        action: 'update',
+        id: id,
+        data: rowData,
+      }),
     });
 
-    return true;
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 200)}`);
+      return false;
+    }
+
+    const result = await response.json();
+    return result.success === true;
   } catch (error) {
     console.error(`Error updating row in sheet ${sheetName}:`, error);
     return false;
@@ -113,45 +141,38 @@ export async function updateRow(
 }
 
 /**
- * Delete a row from a specific sheet
+ * Delete a row from a specific sheet by ID
  */
-export async function deleteRow(sheetName: string, rowIndex: number): Promise<boolean> {
+export async function deleteRow(sheetName: string, id: string): Promise<boolean> {
   try {
-    if (!SPREADSHEET_ID) {
-      console.error('GOOGLE_SPREADSHEET_ID not set');
+    if (!WEB_APP_URL) {
+      console.error('GOOGLE_WEB_APP_URL not set');
       return false;
     }
 
-    // Get sheet metadata to find the sheet ID
-    const spreadsheet = await sheets.spreadsheets.get({
-      spreadsheetId: SPREADSHEET_ID,
-    });
-
-    const sheet = spreadsheet.data.sheets?.find((s) => s.properties?.title === sheetName);
-    if (!sheet?.properties?.sheetId) {
-      console.error(`Sheet ${sheetName} not found`);
-      return false;
-    }
-
-    await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: SPREADSHEET_ID,
-      requestBody: {
-        requests: [
-          {
-            deleteDimension: {
-              range: {
-                sheetId: sheet.properties.sheetId,
-                dimension: 'ROWS',
-                startIndex: rowIndex + 1, // +1 because row 0 is header
-                endIndex: rowIndex + 2,
-              },
-            },
-          },
-        ],
+    const response = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      body: JSON.stringify({
+        sheet: sheetName,
+        action: 'delete',
+        id: id,
+      }),
     });
 
-    return true;
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 200)}`);
+      return false;
+    }
+
+    const result = await response.json();
+    return result.success === true;
   } catch (error) {
     console.error(`Error deleting row from sheet ${sheetName}:`, error);
     return false;

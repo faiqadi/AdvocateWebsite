@@ -58,9 +58,9 @@ This project is configured for easy deployment on Vercel.
    - **Output Directory**: `.next` (auto-detected)
    - **Install Command**: `bun install` (or leave default)
 
-4. **Environment Variables** (if needed):
-   - Add any environment variables in Vercel dashboard
-   - Currently, no environment variables are required
+4. **Environment Variables** (if using Google Sheets CMS):
+   - Add `GOOGLE_WEB_APP_URL` in Vercel dashboard
+   - See [GOOGLE_WEB_APP_SETUP.md](./GOOGLE_WEB_APP_SETUP.md) for setup instructions
 
 5. **Deploy**:
    - Click "Deploy"
@@ -87,6 +87,8 @@ After deployment, your site will be available at:
 - ✅ SEO-friendly
 - ✅ Fast page transitions with loading indicators
 - ✅ Mobile-friendly navigation with expandable menus
+- ✅ Google Sheets CMS integration
+- ✅ Dark mode support
 
 ## Project Structure
 
