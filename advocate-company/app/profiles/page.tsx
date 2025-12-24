@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import Navigation from '../components/Navigation';
 import type { Profile } from '@/lib/cms';
 import { fetchWithCache } from '@/lib/cache-client';
+import { getBuildingImage } from '@/lib/building-images';
 
 // Lazy load Footer
 const Footer = dynamic(() => import('../components/Footer'), {
@@ -81,7 +82,18 @@ export default function ProfilesPage() {
   );
 
   return (
-    <div className="min-h-screen relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-300 font-sans selection:bg-accent selection:text-white transition-colors duration-300">
+    <div
+      className="min-h-screen relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-300 font-sans selection:bg-accent selection:text-white transition-colors duration-300"
+      style={{
+        backgroundImage: `url(${getBuildingImage(2)})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      {/* Theme Responsive Overlay */}
+      <div className="absolute inset-0 bg-white/85 dark:bg-slate-950/80 backdrop-blur-[2px] transition-colors duration-300"></div>
+
       {/* Industrial Grid Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>

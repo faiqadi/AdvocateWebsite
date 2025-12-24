@@ -73,8 +73,8 @@ export default function TentangKamiPage() {
   const displayContent = content.length > 0 ? content : defaultContent;
 
   return (
-    <div 
-      className="min-h-screen relative transition-colors duration-200"
+    <div
+      className="min-h-screen relative bg-slate-50 dark:bg-slate-950 font-sans selection:bg-accent selection:text-white transition-colors duration-300"
       style={{
         backgroundImage: `url(${getBuildingImage(7)})`,
         backgroundSize: 'cover',
@@ -82,63 +82,101 @@ export default function TentangKamiPage() {
         backgroundAttachment: 'fixed',
       }}
     >
-      <div className="absolute inset-0 bg-gray-900/60 dark:bg-gray-950/90"></div>
-      <div className="relative z-10">
-        <Navigation />
-        
-        {/* Hero Section */}
-        <div className="bg-transparent backdrop-blur-sm text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <ScrollAnimation direction="up">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Tentang Kami</h1>
-          </ScrollAnimation>
-        </div>
+      {/* Theme Responsive Overlay */}
+      {/* Light Mode: White overlay to fade out image for dark text readability */}
+      {/* Dark Mode: Dark overlay for white text readability */}
+      <div className="absolute inset-0 bg-white/95 dark:bg-slate-950/90 backdrop-blur-[2px] transition-colors duration-300"></div>
+
+      {/* Industrial Grid Texture (Subtle) */}
+      <div className="fixed inset-0 pointer-events-none opacity-20 dark:opacity-20 mix-blend-overlay">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        <div className="absolute top-0 right-0 w-1/3 h-full border-l border-slate-900/5 dark:border-white/5"></div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        {loading ? (
-          <div className="space-y-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-6 bg-white/20 dark:bg-gray-700/50 rounded w-1/3 mb-4"></div>
-                <div className="h-4 bg-white/20 dark:bg-gray-800/50 rounded mb-2"></div>
-                <div className="h-4 bg-white/20 dark:bg-gray-800/50 rounded mb-2"></div>
-                <div className="h-4 bg-white/20 dark:bg-gray-800/50 rounded w-5/6"></div>
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navigation variant="default" />
+
+        {/* Header Section */}
+        <div className="pt-32 pb-12 border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-slate-950/50 backdrop-blur-md transition-colors duration-300">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <span className="inline-block py-1 px-2 border border-accent/30 bg-accent/10 text-accent text-xs font-mono tracking-widest uppercase mb-4">
+                  Firm Profile
+                </span>
+                <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white uppercase tracking-tight transition-colors duration-300">
+                  Tentang Kami
+                </h1>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-6 text-gray-200 dark:text-gray-300 leading-relaxed">
-            {displayContent.map((item, index) => (
-            <ScrollAnimation key={item.id} direction="up" delay={index * 100}>
-              {item.title && (
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                  {item.title}
-                </h2>
-              )}
-              <p className="text-base md:text-lg whitespace-pre-line">
-                {item.content}
+              <p className="max-w-xl text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-l-2 border-slate-300 dark:border-slate-700 pl-4 transition-colors duration-300">
+                Membangun kepercayaan melalui integritas, profesionalisme, dan dedikasi dalam setiap layanan hukum yang kami berikan.
               </p>
-            </ScrollAnimation>
-          ))}
+            </div>
           </div>
-        )}
-
-        {/* Play Firm Profile Button */}
-        <div className="mt-10 text-center">
-          <ScrollAnimation direction="up" delay={displayContent.length * 100}>
-            <Link
-              href="/profiles"
-              className="inline-block bg-blue-900 dark:bg-blue-800 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-800 dark:hover:bg-blue-700 transition-colors"
-            >
-              Putar Profil Firma
-            </Link>
-          </ScrollAnimation>
         </div>
-      </div>
 
-      <Footer />
+        {/* Main Content */}
+        <div className="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full relative z-10">
+          {loading ? (
+            <div className="space-y-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse border border-slate-200 dark:border-slate-800 p-8 bg-white/50 dark:bg-slate-900/50">
+                  <div className="h-6 bg-slate-200 dark:bg-slate-800 w-1/3 mb-6"></div>
+                  <div className="space-y-3">
+                    <div className="h-4 bg-slate-200 dark:bg-slate-800 w-full"></div>
+                    <div className="h-4 bg-slate-200 dark:bg-slate-800 w-full"></div>
+                    <div className="h-4 bg-slate-200 dark:bg-slate-800 w-5/6"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {displayContent.map((item, index) => (
+                <ScrollAnimation key={item.id} direction="up" delay={index * 100}>
+                  <div className="relative group p-8 bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 hover:border-accent transition-all duration-300 shadow-sm hover:shadow-xl backdrop-blur-sm">
+                    {/* Corner Accents */}
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-slate-900 dark:border-white/30 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-slate-900 dark:border-white/30 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-slate-900 dark:border-white/30 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-slate-900 dark:border-white/30 group-hover:opacity-100 transition-opacity"></div>
+
+                    {item.title && (
+                      <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-wide border-b border-slate-200 dark:border-white/10 pb-4">
+                        {item.title}
+                      </h2>
+                    )}
+                    <div className="prose prose-slate dark:prose-invert max-w-none">
+                      <p className="text-base md:text-lg leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line">
+                        {item.content}
+                      </p>
+                    </div>
+                  </div>
+                </ScrollAnimation>
+              ))}
+            </div>
+          )}
+
+          {/* CTA Button */}
+          <div className="mt-16 text-center">
+            <ScrollAnimation direction="up" delay={displayContent.length * 100}>
+              <div className="inline-block relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-accent to-orange-600 rounded-sm blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                <Link
+                  href="/profiles"
+                  className="relative flex items-center px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold uppercase tracking-widest text-xs border border-slate-200 dark:border-slate-700 hover:border-accent transition-all duration-300"
+                >
+                  <span>Lihat Profil Tim</span>
+                  <svg className="w-4 h-4 ml-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </div>
+            </ScrollAnimation>
+          </div>
+        </div>
+
+        <Footer />
       </div>
     </div>
   );

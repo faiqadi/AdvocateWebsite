@@ -59,21 +59,32 @@ export default function FounderSection() {
 
   return (
     <section
-      className="py-24 relative bg-slate-900 border-t border-slate-800"
+      className="py-24 relative bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300"
+      style={{
+        backgroundImage: `url(${getBuildingImage(6)})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
     >
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idHJhbnNwYXJlbnQiLz48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIi8+PC9zdmc+')] opacity-20"></div>
+      {/* Theme Responsive Overlay */}
+      <div className="absolute inset-0 bg-white/85 dark:bg-slate-950/80 backdrop-blur-[2px] transition-colors duration-300"></div>
+
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idHJhbnNwYXJlbnQiLz48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIi8+PC9zdmc+')] opacity-20 pointer-events-none"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <ScrollAnimation direction="up">
           <div className="text-center mb-16">
             <span className="inline-block py-1 px-3 border border-accent/30 bg-accent/10 text-accent text-xs font-mono tracking-widest uppercase mb-4">Leadership</span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white uppercase tracking-tight">The Founders</h2>
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">
+              <span className="inline-block bg-accent/10 border-l-4 border-accent pl-6 pr-4 py-2">The Founders</span>
+            </h2>
           </div>
         </ScrollAnimation>
 
         <div className="max-w-5xl mx-auto">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="relative bg-slate-950 border border-slate-800 p-8 md:p-12">
+            <div className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-8 md:p-12">
               {/* Industrial Top Decoration */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-accent"></div>
 
@@ -82,8 +93,8 @@ export default function FounderSection() {
                   <div
                     key={founder.id}
                     className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === currentIndex
-                        ? 'opacity-100 translate-x-0'
-                        : 'opacity-0 translate-x-8 pointer-events-none'
+                      ? 'opacity-100 translate-x-0'
+                      : 'opacity-0 translate-x-8 pointer-events-none'
                       }`}
                   >
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
@@ -105,19 +116,19 @@ export default function FounderSection() {
                       </div>
 
                       <div className="flex-1 text-center md:text-left pt-2">
-                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 uppercase tracking-wide">
+                        <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">
                           {founder.name}
                         </h3>
                         <p className="text-accent font-mono text-sm tracking-widest mb-6 uppercase">
                           {founder.title}
                         </p>
-                        <p className="text-slate-400 leading-relaxed mb-8 text-lg font-light">
+                        <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-8 text-lg font-light">
                           {founder.description}
                         </p>
 
                         <Link
                           href="/profiles"
-                          className="inline-flex items-center gap-2 text-white border-b border-slate-600 hover:border-accent pb-1 transition-colors uppercase text-sm font-bold tracking-wider"
+                          className="inline-flex items-center gap-2 text-slate-900 dark:text-white border-b border-slate-400 dark:border-slate-600 hover:border-accent pb-1 transition-colors uppercase text-sm font-bold tracking-wider"
                         >
                           Full Profile <span className="text-accent">→</span>
                         </Link>
@@ -131,13 +142,13 @@ export default function FounderSection() {
               <div className="absolute bottom-6 right-6 flex gap-2">
                 <button
                   onClick={() => goToSlide((currentIndex - 1 + founders.length) % founders.length)}
-                  className="w-10 h-10 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="w-10 h-10 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   ←
                 </button>
                 <button
                   onClick={() => goToSlide((currentIndex + 1) % founders.length)}
-                  className="w-10 h-10 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="w-10 h-10 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   →
                 </button>

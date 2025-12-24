@@ -99,15 +99,13 @@ export default function Navigation({ variant = 'default' }: NavigationProps) {
   // Helper to determine text colors based on variant and state
   const getTextColorClass = () => {
     if (scrolled) return 'text-slate-900 dark:text-white';
-    // Not scrolled (transparent bg)
-    if (variant === 'home') return 'text-white'; // Always white on home hero
-    return 'text-slate-900 dark:text-white'; // Adapt to theme on internal pages
+    // Not scrolled - use accent in day mode, white in night mode
+    return 'text-accent dark:text-white';
   };
 
   const getSubTextColorClass = () => {
-    if (scrolled) return 'text-slate-500';
-    if (variant === 'home') return 'text-slate-400';
-    return 'text-slate-500 dark:text-slate-400';
+    if (scrolled) return 'text-slate-500 dark:text-slate-400';
+    return 'text-accent/80 dark:text-slate-400';
   };
 
   const getLinkClass = (isActive: boolean) => {
@@ -119,12 +117,8 @@ export default function Navigation({ variant = 'default' }: NavigationProps) {
       return `${baseClass} text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white`;
     }
 
-    // Not scrolled
-    if (variant === 'home') {
-      return `${baseClass} text-white/80 hover:text-white hover:bg-white/10`;
-    }
-
-    return `${baseClass} text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10`;
+    // Not scrolled - use accent in day mode, white in night mode
+    return `${baseClass} text-accent hover:text-orange-600 hover:bg-accent/10 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10`;
   };
 
   const getMobileButtonClass = () => {
@@ -162,7 +156,9 @@ export default function Navigation({ variant = 'default' }: NavigationProps) {
       </div>
 
       <nav
-        className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'top-0 glass-industrial py-2' : 'top-0 md:top-[33px] bg-transparent py-6'
+        className={`fixed w-full z-50 transition-all duration-300 ${scrolled
+          ? 'top-0 glass-industrial py-2'
+          : 'top-0 md:top-[33px] bg-transparent py-6'
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

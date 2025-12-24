@@ -6,17 +6,17 @@ import dynamic from 'next/dynamic';
 import Navigation from '../../../components/Navigation';
 import Link from 'next/link';
 import type { Article } from '@/lib/cms';
+import ScrollAnimation from '../../../components/ScrollAnimation';
 
 // Lazy load Footer since it's at the bottom
 const Footer = dynamic(() => import('../../../components/Footer'), {
-  loading: () => <div className="h-48 bg-gray-900 animate-pulse" />,
+  loading: () => <div className="h-48 bg-slate-900 animate-pulse" />,
 });
 
 export default function ArticleDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const slug = params?.slug as string;
-  
+
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,11 +27,11 @@ export default function ArticleDetailPage() {
     async function fetchArticle() {
       setLoading(true);
       setError('');
-      
+
       // Decode slug for localStorage key
       const decodedSlug = decodeURIComponent(slug);
       const articleKey = `article_${decodedSlug}`;
-      
+
       // Check localStorage first
       try {
         const cachedData = localStorage.getItem(articleKey);
@@ -39,7 +39,7 @@ export default function ArticleDetailPage() {
           const parsed = JSON.parse(cachedData);
           const cacheAge = Date.now() - (parsed.cachedAt || 0);
           const CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
-          
+
           // Use cached data if it's fresh
           if (cacheAge < CACHE_MAX_AGE && parsed.slug === decodedSlug) {
             console.log('Using cached article data:', articleKey);
@@ -54,7 +54,7 @@ export default function ArticleDetailPage() {
       } catch (e) {
         console.warn('Error reading cache:', e);
       }
-      
+
       // Fetch from API if no cache or cache is stale
       try {
         console.log('Fetching article from API with slug/id:', decodedSlug);
@@ -70,13 +70,13 @@ export default function ArticleDetailPage() {
         }
         const data = await res.json();
         console.log('Article fetched from API:', data);
-        
+
         // Cache the fetched data
         localStorage.setItem(articleKey, JSON.stringify({
           ...data,
           cachedAt: Date.now()
         }));
-        
+
         setArticle(data);
       } catch (err: any) {
         console.error('Error fetching article:', err);
@@ -103,119 +103,131 @@ export default function ArticleDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-      <Navigation />
-      
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/knowledge-center/articles"
-            className="inline-flex items-center text-blue-200 hover:text-white mb-4 transition-colors"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Kembali ke Articles
-          </Link>
-          {loading && (
-            <div className="animate-pulse">
-              <div className="h-8 bg-blue-800 rounded w-3/4 mb-4"></div>
-              <div className="h-4 bg-blue-800 rounded w-1/2"></div>
-            </div>
-          )}
-          {!loading && article && (
-            <div className="flex items-center text-blue-200 space-x-4">
-              <span className="text-sm font-semibold">Articles</span>
-              <span>•</span>
-              <time className="text-sm">{formatDate(article.publishedDate)}</time>
-            </div>
-          )}
-        </div>
+    <div className="min-h-screen relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-300 font-sans selection:bg-accent selection:text-white transition-colors duration-300">
+      {/* Industrial Grid Texture */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        <div className="absolute top-0 right-0 w-1/3 h-full border-l border-slate-200 dark:border-slate-800/30"></div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {loading && (
-          <div className="text-center py-10 text-gray-500 dark:text-gray-400">
-            Memuat artikel...
-          </div>
-        )}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navigation variant="default" />
 
-        {!loading && error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
-            <p className="text-red-600 dark:text-red-400">{error}</p>
+        {/* Header Section */}
+        <div className="pt-32 pb-12 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur-sm transition-colors duration-300">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <Link
               href="/knowledge-center/articles"
-              className="inline-block mt-4 text-blue-900 dark:text-blue-400 hover:underline"
+              className="inline-flex items-center text-xs font-bold text-slate-500 hover:text-accent uppercase tracking-widest mb-6 transition-colors"
             >
-              ← Kembali ke Articles
+              <span className="mr-2">←</span> Back to Articles
             </Link>
+
+            {loading && (
+              <div className="animate-pulse space-y-4">
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 w-32"></div>
+                <div className="h-8 bg-slate-200 dark:bg-slate-800 w-3/4"></div>
+              </div>
+            )}
+
+            {!loading && article && (
+              <ScrollAnimation direction="up">
+                <div className="flex items-center gap-4 mb-4">
+                  <span className="px-2 py-1 bg-accent/10 border border-accent/20 text-accent text-xs uppercase tracking-wider font-bold">
+                    Article
+                  </span>
+                  <div className="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
+                  <time className="text-xs text-slate-500 font-mono uppercase">
+                    {formatDate(article.publishedDate)}
+                  </time>
+                </div>
+                <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight mb-8">
+                  {article.title}
+                </h1>
+              </ScrollAnimation>
+            )}
           </div>
-        )}
+        </div>
 
-        {!loading && !error && article && (
-          <article className="bg-white dark:bg-gray-800 rounded-lg p-8 md:p-12 border border-gray-200 dark:border-gray-700">
-            {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              {article.title}
-            </h1>
-
-            {/* Published Date */}
-            <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-              <time className="text-sm text-gray-500 dark:text-gray-400">
-                Dipublikasikan pada {formatDate(article.publishedDate)}
-              </time>
+        {/* Content */}
+        <div className="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full relative z-10">
+          {loading && (
+            <div className="space-y-6">
+              <div className="h-64 bg-slate-200 dark:bg-slate-800 w-full animate-pulse"></div>
+              <div className="space-y-4 animate-pulse">
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 w-full"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 w-full"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 w-5/6"></div>
+              </div>
             </div>
+          )}
 
-            {/* Featured Image */}
-            {article.featuredImage && (
-              <div className="mb-8">
-                <img
-                  src={article.featuredImage}
-                  alt={article.title}
-                  className="w-full h-auto rounded-lg shadow-lg"
-                  loading="lazy"
-                  onError={(e) => {
-                    // Fallback to direct thumbnail if proxy fails
-                    const target = e.target as HTMLImageElement;
-                    const currentSrc = target.src;
-                    if (currentSrc.includes('images.weserv.nl')) {
-                      // Extract file ID from the proxied URL
-                      const fileIdMatch = currentSrc.match(/id=([a-zA-Z0-9_-]+)/);
-                      if (fileIdMatch && fileIdMatch[1]) {
-                        target.src = `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w1200`;
-                      }
-                    }
-                  }}
-                />
+          {!loading && error && (
+            <div className="p-8 text-center text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10">
+              {error}
+              <div className="mt-4">
+                <Link
+                  href="/knowledge-center/articles"
+                  className="text-sm font-bold underline"
+                >
+                  Return to Articles
+                </Link>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Content */}
-            {article.content ? (
-              <div
-                className="prose prose-lg dark:prose-invert max-w-none
-                  prose-headings:text-gray-900 dark:prose-headings:text-white
-                  prose-p:text-gray-700 dark:prose-p:text-gray-300
-                  prose-a:text-blue-900 dark:prose-a:text-blue-400
-                  prose-strong:text-gray-900 dark:prose-strong:text-white
-                  prose-ul:text-gray-700 dark:prose-ul:text-gray-300
-                  prose-ol:text-gray-700 dark:prose-ol:text-gray-300
-                  prose-img:rounded-lg prose-img:shadow-lg"
-                dangerouslySetInnerHTML={{ __html: article.content }}
-              />
-            ) : (
-              <div className="text-gray-600 dark:text-gray-400">
-                <p>Konten artikel belum tersedia.</p>
-              </div>
-            )}
-          </article>
-        )}
+          {!loading && !error && article && (
+            <article>
+              {article.featuredImage && (
+                <ScrollAnimation direction="up" delay={100}>
+                  <div className="mb-12 relative group rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+                    <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                    <img
+                      src={article.featuredImage}
+                      alt={article.title}
+                      className="w-full h-auto"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        const currentSrc = target.src;
+                        if (currentSrc.includes('images.weserv.nl')) {
+                          const fileIdMatch = currentSrc.match(/id=([a-zA-Z0-9_-]+)/);
+                          if (fileIdMatch && fileIdMatch[1]) {
+                            target.src = `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w1200`;
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </ScrollAnimation>
+              )}
+
+              {article.content ? (
+                <ScrollAnimation direction="up" delay={200}>
+                  <div
+                    className="prose prose-lg dark:prose-invert max-w-none
+                        prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white
+                        prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed
+                        prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+                        prose-strong:text-slate-900 dark:prose-strong:text-white
+                        prose-ul:text-slate-600 dark:prose-ul:text-slate-300
+                        prose-ol:text-slate-600 dark:prose-ol:text-slate-300
+                        prose-blockquote:border-l-accent prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-slate-900/50 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:not-italic
+                        "
+                    dangerouslySetInnerHTML={{ __html: article.content }}
+                  />
+                </ScrollAnimation>
+              ) : (
+                <div className="p-8 text-center border border-slate-200 dark:border-slate-800 border-dashed text-slate-500 italic">
+                  Konten artikel belum tersedia.
+                </div>
+              )}
+            </article>
+          )}
+        </div>
+
+        <Footer />
       </div>
-
-      <Footer />
     </div>
   );
 }
-

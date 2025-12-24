@@ -2,6 +2,7 @@
 
 import ScrollAnimation from './ScrollAnimation';
 import Link from 'next/link';
+import { getBuildingImage } from '@/lib/building-images';
 
 const benefits = [
   {
@@ -44,14 +45,26 @@ const benefits = [
 
 export default function ManfaatKerjaSamaSection() {
   return (
-    <section className="py-24 relative bg-slate-950 border-t border-slate-900">
+    <section
+      className="py-24 relative bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 transition-colors duration-300"
+      style={{
+        backgroundImage: `url(${getBuildingImage(1)})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      {/* Theme Responsive Overlay */}
+      <div className="absolute inset-0 bg-white/85 dark:bg-slate-950/80 backdrop-blur-[2px] transition-colors duration-300"></div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <div className="mb-16">
           <ScrollAnimation direction="up">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 uppercase tracking-tight">
-              Manfaat <span className="text-slate-600">Kerja Sama</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-tight">
+              <span className="inline-block border-b-4 border-accent pb-2">
+                Manfaat <span className="text-slate-400 dark:text-slate-600">Kerja Sama</span>
+              </span>
             </h2>
-            <p className="text-lg text-slate-400 max-w-2xl border-l-2 border-accent pl-6">
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl border-l-2 border-accent pl-6">
               Pilih Bagus Law Firm sebagai partner hukum Anda dan dapatkan berbagai
               keuntungan yang akan membantu bisnis Anda berkembang.
             </p>
@@ -61,18 +74,18 @@ export default function ManfaatKerjaSamaSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {benefits.map((benefit, index) => (
             <ScrollAnimation key={benefit.id} direction="up" delay={index * 100}>
-              <div className="group bg-slate-900 p-8 border border-slate-800 hover:border-accent transition-all duration-300 relative overflow-hidden">
+              <div className="group bg-white dark:bg-slate-900 p-8 border border-slate-200 dark:border-slate-800 hover:border-accent transition-all duration-300 relative overflow-hidden">
                 {/* Hover Background Effect */}
                 <div className="absolute inset-0 bg-accent/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
 
                 <div className="relative z-10">
-                  <div className="text-5xl font-bold text-slate-800 mb-6 font-mono group-hover:text-accent/20 transition-colors">
+                  <div className="text-5xl font-bold text-slate-200 dark:text-slate-800 mb-6 font-mono group-hover:text-accent/20 transition-colors">
                     {benefit.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-4 uppercase tracking-wide group-hover:text-accent transition-colors">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wide group-hover:text-accent transition-colors">
                     {benefit.title}
                   </h3>
-                  <p className="text-slate-400 leading-relaxed text-sm">
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
                     {benefit.description}
                   </p>
                 </div>
@@ -82,28 +95,28 @@ export default function ManfaatKerjaSamaSection() {
         </div>
 
         <ScrollAnimation direction="up" delay={600}>
-          <div className="bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 p-12 text-center relative overflow-hidden">
+          <div className="bg-gradient-to-r from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 p-12 text-center relative overflow-hidden transition-colors duration-300">
             {/* Decorative Grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
 
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white uppercase tracking-wider">
+              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white uppercase tracking-wider">
                 Siap Memulai Kerja Sama?
               </h3>
-              <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
+              <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
                 Hubungi kami sekarang untuk konsultasi gratis dan dapatkan solusi hukum
                 terbaik untuk kebutuhan bisnis Anda.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/contact"
-                  className="px-8 py-4 bg-accent text-white font-bold text-sm tracking-[0.2em] uppercase hover:bg-white hover:text-slate-900 transition-colors"
+                  className="px-8 py-4 bg-accent text-white font-bold text-sm tracking-[0.2em] uppercase hover:bg-orange-600 transition-colors"
                 >
                   Hubungi Kami
                 </Link>
                 <Link
                   href="/practice-areas"
-                  className="px-8 py-4 border border-slate-600 text-white font-bold text-sm tracking-[0.2em] uppercase hover:border-white hover:bg-white/5 transition-colors"
+                  className="px-8 py-4 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-bold text-sm tracking-[0.2em] uppercase hover:border-slate-400 dark:hover:border-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                 >
                   Lihat Layanan
                 </Link>
