@@ -13,7 +13,7 @@ const Footer = dynamic(() => import('./components/Footer'), {
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <Navigation />
+      <Navigation variant="home" />
       <HeroSection />
       <TentangKantorSection />
       <FounderSection />

@@ -8,9 +8,9 @@ import { getSheetData } from './google-sheets';
 /**
  * Normalize Google Drive URL to use proxy service for better reliability
  */
-function normalizeGoogleDriveUrl(url: string): string {
+function normalizeGoogleDriveUrl(url: string, type: 'landscape' | 'portrait' | 'original' = 'landscape'): string {
   if (!url) return '';
-  
+
   // Handle Google Drive share links
   // Examples:
   // - https://drive.google.com/file/d/FILE_ID/view?usp=...
@@ -25,9 +25,15 @@ function normalizeGoogleDriveUrl(url: string): string {
     // Use proxy service for better reliability
     // images.weserv.nl is a free image proxy/CDN service
     const driveUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+
+    if (type === 'original') {
+      // Keep original aspect ratio, limit width to 1000px for performance
+      return `https://images.weserv.nl/?url=${encodeURIComponent(driveUrl)}&w=1000`;
+    }
+
     return `https://images.weserv.nl/?url=${encodeURIComponent(driveUrl)}&w=1200&h=800&fit=cover`;
   }
-  
+
   // Return original URL if not a Google Drive link
   return url;
 }
@@ -38,7 +44,7 @@ function normalizeGoogleDriveUrl(url: string): string {
  */
 function processContent(content: string): string {
   if (!content) return '';
-  
+
   // If content already contains HTML tags, process // separators within HTML
   if (content.includes('<p>') || content.includes('<div>') || content.includes('<br')) {
     // Replace // with </p><p> to create new paragraphs
@@ -47,18 +53,18 @@ function processContent(content: string): string {
       .replace(/\/\//g, '</p><p>')
       .replace(/<p>\s*<\/p>/g, ''); // Remove empty paragraphs
   }
-  
+
   // Split by // separator and wrap each part in <p> tags
   const paragraphs = content
     .split('//')
     .map(p => p.trim())
     .filter(p => p.length > 0);
-  
+
   // If no // found, wrap entire content in <p> tag
   if (paragraphs.length === 0) {
     return `<p>${content}</p>`;
   }
-  
+
   // Wrap each paragraph in <p> tags
   return paragraphs.map(p => `<p>${p}</p>`).join('');
 }
@@ -137,31 +143,31 @@ export async function getArticles(options?: {
 }): Promise<Article[]> {
   try {
     const params: Record<string, string> = {};
-    
+
     if (options?.status) {
       params.status = options.status;
     } else {
       params.status = 'active';
     }
-    
+
     if (options?.category) {
       params.category = options.category;
     }
-    
+
     if (options?.sort) {
       params.sort = options.sort;
     }
-    
+
     if (options?.limit) {
       params.limit = options.limit.toString();
     }
-    
+
     const data = await getSheetData('Articles', params);
-    
+
     const articles: Article[] = data.map((row: any, index: number) => {
       const id = row.id || `article-${index}`;
       const title = row.title || '';
-      
+
       // Create slug from title if not provided
       let slug = row.slug || '';
       if (!slug && title) {
@@ -173,20 +179,20 @@ export async function getArticles(options?: {
           .trim()
           .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
       }
-      
+
       // Fallback to id if slug is still empty
       if (!slug) {
         slug = id;
       }
-      
+
       // Normalize featured image URL (handle Google Drive links)
       const rawImage = row.featuredImage || row.image || '';
       const featuredImage = normalizeGoogleDriveUrl(rawImage);
-      
+
       // Process content to convert // separators to HTML paragraphs
       const rawContent = row.content || '';
       const content = processContent(rawContent);
-      
+
       return {
         id,
         title,
@@ -213,29 +219,29 @@ export async function getArticles(options?: {
 export async function getArticleBySlug(slugOrId: string): Promise<Article | null> {
   try {
     const articles = await getArticles({ status: 'active' });
-    
+
     // Decode the slug/id in case it's URL encoded
     const decodedSlug = decodeURIComponent(slugOrId);
-    
+
     // Try multiple matching strategies:
     // 1. Exact slug match (decoded)
     let article = articles.find((a) => a.slug === decodedSlug);
-    
+
     // 2. Exact id match (decoded)
     if (!article) {
       article = articles.find((a) => a.id === decodedSlug);
     }
-    
+
     // 3. Slug match (original, in case it's already correct)
     if (!article && decodedSlug !== slugOrId) {
       article = articles.find((a) => a.slug === slugOrId);
     }
-    
+
     // 4. Id match (original)
     if (!article && decodedSlug !== slugOrId) {
       article = articles.find((a) => a.id === slugOrId);
     }
-    
+
     // 5. Try to match by creating slug from the search term (for cases where title is used)
     if (!article) {
       const searchSlug = decodedSlug
@@ -247,7 +253,7 @@ export async function getArticleBySlug(slugOrId: string): Promise<Article | null
         .replace(/^-+|-+$/g, '');
       article = articles.find((a) => a.slug === searchSlug);
     }
-    
+
     return article || null;
   } catch (error) {
     console.error('Error fetching article:', error);
@@ -265,21 +271,21 @@ export async function getProfiles(options?: {
 }): Promise<Profile[]> {
   try {
     const params: Record<string, string> = {};
-    
+
     if (options?.category && options.category !== 'all') {
       params.category = options.category;
     }
-    
+
     if (options?.sort) {
       params.sort = options.sort;
     }
-    
+
     if (options?.limit) {
       params.limit = options.limit.toString();
     }
-    
+
     const data = await getSheetData('Profiles', params);
-    
+
     const profiles: Profile[] = data.map((row: any, index: number) => {
       // Try to find a photo/image column (supports photo, Photo, FOTO, image, imageUrl, etc.)
       const photoKey =
@@ -291,7 +297,9 @@ export async function getProfiles(options?: {
 
       // Normalize photo URL, including Google Drive links
       const rawPhoto: string = row[photoKey] || '';
-      const photo = normalizeGoogleDriveUrl(rawPhoto);
+
+      // Use 'original' type to prevent cropping and preserve portrait aspect ratios
+      const photo = normalizeGoogleDriveUrl(rawPhoto, 'original');
 
       return {
         id: row.id || `profile-${index}`,
@@ -321,7 +329,7 @@ export async function getProfiles(options?: {
 export async function getPracticeAreas(): Promise<PracticeArea[]> {
   try {
     const data = await getSheetData('PracticeAreas', { active: 'true' });
-    
+
     const practiceAreas: PracticeArea[] = data.map((row: any, index: number) => ({
       id: row.id || `practice-${index}`,
       title: row.title || '',
@@ -345,7 +353,7 @@ export async function getPracticeAreas(): Promise<PracticeArea[]> {
 export async function getSpecialists(): Promise<Specialist[]> {
   try {
     const data = await getSheetData('Specialists');
-    
+
     const specialists: Specialist[] = data.map((row: any, index: number) => ({
       id: row.id || `specialist-${index}`,
       title: row.title || '',
@@ -369,7 +377,7 @@ export async function getSpecialists(): Promise<Specialist[]> {
 export async function getHeroSlides(): Promise<HeroSlide[]> {
   try {
     const data = await getSheetData('HeroSlides', { active: 'true', sort: 'order' });
-    
+
     const slides: HeroSlide[] = data.map((row: any, index: number) => ({
       id: row.id || `slide-${index}`,
       title: row.title || '',
@@ -395,7 +403,7 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
 export async function getAboutUs(): Promise<AboutUs[]> {
   try {
     const data = await getSheetData('AboutUs', { active: 'true', sort: 'order' });
-    
+
     const aboutUs: AboutUs[] = data.map((row: any, index: number) => ({
       id: row.id || `about-${index}`,
       title: row.title || '',

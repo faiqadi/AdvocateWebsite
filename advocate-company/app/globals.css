@@ -3,13 +3,78 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Industrial Modern Palette */
+  --background: #f8fafc;
+  /* Slate-50 */
+  --foreground: #0f172a;
+  /* Slate-900 */
+
+  /* Primary: Deep Technical Blue/Slate */
+  --primary: #334155;
+  /* Slate-700 */
+  --primary-foreground: #ffffff;
+
+  /* Accent: Safety Orange / Bronze */
+  --accent: #c2410c;
+  /* Orange-700 */
+  --accent-foreground: #ffffff;
+
+  /* Muted: Industrial Greys */
+  --muted: #e2e8f0;
+  /* Slate-200 */
+  --muted-foreground: #64748b;
+  /* Slate-500 */
+
+  /* Cards: Clean White/Slate */
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --border: #cbd5e1;
+  /* Slate-300 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #09090b;
+    /* Zinc-950 */
+    --foreground: #f8fafc;
+
+    /* Primary Dark: Lighter Slate */
+    --primary: #94a3b8;
+    /* Slate-400 */
+    --primary-foreground: #09090b;
+
+    /* Accent Dark: Bright Amber/Orange */
+    --accent: #f97316;
+    /* Orange-500 */
+    --accent-foreground: #ffffff;
+
+    --muted: #1e293b;
+    /* Slate-800 */
+    --muted-foreground: #94a3b8;
+
+    --card: #18181b;
+    /* Zinc-900 */
+    --card-foreground: #f8fafc;
+
+    --border: #27272a;
+    /* Zinc-800 */
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -18,6 +83,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
@@ -26,4 +93,17 @@ html {
 
 * {
   box-sizing: border-box;
+}
+
+/* Industrial Utility Classes */
+.glass-industrial {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.dark .glass-industrial {
+  background: rgba(9, 9, 11, 0.7);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
 }

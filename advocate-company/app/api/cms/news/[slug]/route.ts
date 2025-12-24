@@ -6,38 +6,39 @@ export const revalidate = 300;
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     // Decode URL parameter (handle %20 and other encoded characters)
-    const decodedSlug = decodeURIComponent(params.slug);
-    
-    const news = await getArticles({ 
+    const decodedSlug = decodeURIComponent(slug);
+
+    const news = await getArticles({
       category: 'news',
-      status: 'active' 
+      status: 'active'
     });
-    
+
     // Try to find by decoded slug first, then by id as fallback
     let foundNews = news.find((item) => item.slug === decodedSlug);
-    
+
     if (!foundNews) {
       foundNews = news.find((item) => item.id === decodedSlug);
     }
-    
+
     // If not found, try with original slug
-    if (!foundNews && decodedSlug !== params.slug) {
-      foundNews = news.find((item) => item.slug === params.slug || item.id === params.slug);
+    if (!foundNews && decodedSlug !== slug) {
+      foundNews = news.find((item) => item.slug === slug || item.id === slug);
     }
-    
+
     if (!foundNews) {
       return NextResponse.json({ error: 'News not found' }, { status: 404 });
     }
 
     const response = NextResponse.json(foundNews);
-    
+
     // Add cache headers for client-side caching
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-    
+
     return response;
   } catch (error) {
     console.error('Error fetching news:', error);

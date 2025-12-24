@@ -43,11 +43,12 @@ export function getCachedData<T>(key: string): T | null {
 export function setCachedData<T>(key: string, data: T): void {
   if (typeof window === 'undefined') return;
 
+  const entry: CacheEntry<T> = {
+    data,
+    timestamp: Date.now(),
+  };
+
   try {
-    const entry: CacheEntry<T> = {
-      data,
-      timestamp: Date.now(),
-    };
     localStorage.setItem(`${CACHE_PREFIX}${key}`, JSON.stringify(entry));
   } catch (error) {
     console.error('Error writing to cache:', error);

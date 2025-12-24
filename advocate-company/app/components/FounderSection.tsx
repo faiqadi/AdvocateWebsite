@@ -36,10 +36,9 @@ export default function FounderSection() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Auto slide every 6 seconds (longer for smoother experience)
     intervalRef.current = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % founders.length);
-    }, 6000);
+    }, 8000);
 
     return () => {
       if (intervalRef.current) {
@@ -50,108 +49,77 @@ export default function FounderSection() {
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
-    // Reset auto slide timer
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     intervalRef.current = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % founders.length);
-    }, 6000);
+    }, 8000);
   };
 
   return (
-    <section 
-      className="py-16 relative transition-colors duration-200"
-      style={{
-        backgroundImage: `url(${getBuildingImage(7)})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
+    <section
+      className="py-24 relative bg-slate-900 border-t border-slate-800"
     >
-      <div className="absolute inset-0 bg-gray-900/60 dark:bg-gray-950/85"></div>
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-        <div className="text-center mb-12">
-          <ScrollAnimation direction="up">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Founder
-            </h2>
-          </ScrollAnimation>
-        </div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idHJhbnNwYXJlbnQiLz48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIi8+PC9zdmc+')] opacity-20"></div>
 
-        <div className="max-w-4xl mx-auto">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+        <ScrollAnimation direction="up">
+          <div className="text-center mb-16">
+            <span className="inline-block py-1 px-3 border border-accent/30 bg-accent/10 text-accent text-xs font-mono tracking-widest uppercase mb-4">Leadership</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-white uppercase tracking-tight">The Founders</h2>
+          </div>
+        </ScrollAnimation>
+
+        <div className="max-w-5xl mx-auto">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-2xl p-8 md:p-12 relative overflow-hidden border border-gray-700/50">
-              {/* Founder Cards */}
-              <div className="relative min-h-[400px] md:min-h-[300px]">
+            <div className="relative bg-slate-950 border border-slate-800 p-8 md:p-12">
+              {/* Industrial Top Decoration */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-accent"></div>
+
+              <div className="relative min-h-[400px] md:min-h-[350px]">
                 {founders.map((founder, index) => (
                   <div
                     key={founder.id}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                      index === currentIndex
-                        ? 'opacity-100 z-10'
-                        : 'opacity-0 z-0 pointer-events-none'
-                    }`}
+                    className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === currentIndex
+                        ? 'opacity-100 translate-x-0'
+                        : 'opacity-0 translate-x-8 pointer-events-none'
+                      }`}
                   >
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-                      <div className="flex-shrink-0">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
+                      <div className="flex-shrink-0 relative group">
+                        {/* Photo Frame */}
+                        <div className="absolute inset-0 border-2 border-slate-700 translate-x-3 translate-y-3 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform"></div>
+
                         {founder.photo ? (
                           <img
                             src={founder.photo}
                             alt={founder.name}
-                            className="w-40 h-40 rounded-full object-cover mx-auto shadow-lg transition-transform duration-1000 ease-in-out"
-                            style={{
-                              transform: index === currentIndex ? 'scale(1)' : 'scale(0.95)',
-                            }}
+                            className="w-48 h-48 md:w-56 md:h-56 object-cover bg-slate-800 relative z-10 grayscale group-hover:grayscale-0 transition-all duration-500"
                           />
                         ) : (
-                          <div 
-                            className="w-40 h-40 bg-blue-900 dark:bg-blue-800 rounded-full mx-auto flex items-center justify-center text-white text-5xl font-bold shadow-lg transition-transform duration-1000 ease-in-out"
-                            style={{
-                              transform: index === currentIndex ? 'scale(1)' : 'scale(0.95)',
-                            }}
-                          >
-                            {founder.initials}
+                          <div className="w-48 h-48 md:w-56 md:h-56 bg-slate-800 relative z-10 flex items-center justify-center border border-slate-700 group-hover:border-accent transition-colors">
+                            <span className="text-6xl font-bold text-slate-600 font-mono">{founder.initials}</span>
                           </div>
                         )}
                       </div>
-                      <div className="flex-1 text-center md:text-left">
-                        <h3 
-                          className="text-2xl md:text-3xl font-bold text-white mb-3 transition-all duration-1000 ease-in-out"
-                          style={{
-                            transform: index === currentIndex ? 'translateY(0)' : 'translateY(10px)',
-                            opacity: index === currentIndex ? 1 : 0.7,
-                          }}
-                        >
+
+                      <div className="flex-1 text-center md:text-left pt-2">
+                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 uppercase tracking-wide">
                           {founder.name}
                         </h3>
-                        <p 
-                          className="text-xl text-blue-400 font-semibold mb-4 transition-all duration-1000 ease-in-out delay-100"
-                          style={{
-                            transform: index === currentIndex ? 'translateY(0)' : 'translateY(10px)',
-                            opacity: index === currentIndex ? 1 : 0.7,
-                          }}
-                        >
+                        <p className="text-accent font-mono text-sm tracking-widest mb-6 uppercase">
                           {founder.title}
                         </p>
-                        <p 
-                          className="text-gray-200 leading-relaxed mb-6 transition-all duration-1000 ease-in-out delay-200"
-                          style={{
-                            transform: index === currentIndex ? 'translateY(0)' : 'translateY(10px)',
-                            opacity: index === currentIndex ? 1 : 0.7,
-                          }}
-                        >
+                        <p className="text-slate-400 leading-relaxed mb-8 text-lg font-light">
                           {founder.description}
                         </p>
+
                         <Link
                           href="/profiles"
-                          className="inline-block bg-blue-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg delay-300"
-                          style={{
-                            transform: index === currentIndex ? 'translateY(0)' : 'translateY(10px)',
-                            opacity: index === currentIndex ? 1 : 0.7,
-                          }}
+                          className="inline-flex items-center gap-2 text-white border-b border-slate-600 hover:border-accent pb-1 transition-colors uppercase text-sm font-bold tracking-wider"
                         >
-                          Lihat Profil Lengkap
+                          Full Profile <span className="text-accent">→</span>
                         </Link>
                       </div>
                     </div>
@@ -159,67 +127,22 @@ export default function FounderSection() {
                 ))}
               </div>
 
-              {/* Slide Indicators */}
-              {founders.length > 1 && (
-                <div className="flex justify-center mt-8 space-x-2">
-                  {founders.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        index === currentIndex
-                          ? 'bg-blue-500 w-8'
-                          : 'bg-gray-600 hover:bg-gray-500'
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Angle Navigation */}
+              <div className="absolute bottom-6 right-6 flex gap-2">
+                <button
+                  onClick={() => goToSlide((currentIndex - 1 + founders.length) % founders.length)}
+                  className="w-10 h-10 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={() => goToSlide((currentIndex + 1) % founders.length)}
+                  className="w-10 h-10 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                  →
+                </button>
+              </div>
 
-              {/* Navigation Arrows */}
-              {founders.length > 1 && (
-                <>
-                  <button
-                    onClick={() => goToSlide((currentIndex - 1 + founders.length) % founders.length)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors z-10 border border-gray-600"
-                    aria-label="Previous founder"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => goToSlide((currentIndex + 1) % founders.length)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors z-10 border border-gray-600"
-                    aria-label="Next founder"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
-                </>
-              )}
             </div>
           </ScrollAnimation>
         </div>

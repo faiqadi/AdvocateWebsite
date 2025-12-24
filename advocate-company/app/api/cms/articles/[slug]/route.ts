@@ -6,21 +6,22 @@ export const revalidate = 300;
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     // Decode URL parameter (handle %20 and other encoded characters)
-    const decodedSlug = decodeURIComponent(params.slug);
-    console.log('API: Searching for article with slug/id:', decodedSlug, '(original:', params.slug, ')');
-    
+    const decodedSlug = decodeURIComponent(slug);
+    console.log('API: Searching for article with slug/id:', decodedSlug, '(original:', slug, ')');
+
     // Try to find by decoded slug/id
     let article = await getArticleBySlug(decodedSlug);
-    
+
     // If not found, try with original slug (in case it's already correct)
-    if (!article && decodedSlug !== params.slug) {
-      article = await getArticleBySlug(params.slug);
+    if (!article && decodedSlug !== slug) {
+      article = await getArticleBySlug(slug);
     }
-    
+
     if (!article) {
       console.error('API: Article not found for slug/id:', decodedSlug);
       return NextResponse.json({ error: 'Article not found' }, { status: 404 });
@@ -28,10 +29,10 @@ export async function GET(
 
     console.log('API: Article found:', { id: article.id, slug: article.slug, title: article.title });
     const response = NextResponse.json(article);
-    
+
     // Add cache headers for client-side caching
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-    
+
     return response;
   } catch (error) {
     console.error('Error fetching article:', error);

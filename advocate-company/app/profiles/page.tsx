@@ -1,19 +1,31 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Navigation from '../components/Navigation';
 import type { Profile } from '@/lib/cms';
 import { fetchWithCache } from '@/lib/cache-client';
-import { getBuildingImage } from '@/lib/building-images';
 
-// Lazy load Footer since it's at the bottom
+// Lazy load Footer
 const Footer = dynamic(() => import('../components/Footer'), {
-  loading: () => <div className="h-48 bg-gray-900 animate-pulse" />,
+  loading: () => <div className="h-48 bg-slate-900 animate-pulse" />,
 });
 
 const FALLBACK_PHOTO =
   'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop';
+
+function ProfileSkeleton() {
+  return (
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse">
+      <div className="aspect-[3/4] bg-slate-200 dark:bg-slate-800 relative">
+        <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
+          <div className="h-6 bg-slate-300 dark:bg-slate-700 w-3/4"></div>
+          <div className="h-4 bg-slate-300 dark:bg-slate-700 w-1/2"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ProfilesPage() {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -46,12 +58,12 @@ export default function ProfilesPage() {
         const json = await fetchWithCache<{ docs: Profile[]; totalDocs: number }>(
           `/api/cms/profiles?${params.toString()}`
         );
+        // Artificial delay for smoother transition feel (optional, but good for UX to prevent flickering on fast connections)
+        await new Promise(resolve => setTimeout(resolve, 300));
         setProfiles(json.docs || []);
       } catch (err: any) {
         console.error('Error fetching profiles:', err);
-        setError(
-          'Gagal memuat data profil. Pastikan Web App sudah di-deploy, di-set ke "Anyone", dan spreadsheet dapat diakses.'
-        );
+        setError('Gagal memuat data profil.');
       } finally {
         setLoading(false);
       }
@@ -69,165 +81,129 @@ export default function ProfilesPage() {
   );
 
   return (
-    <div 
-      className="min-h-screen relative transition-colors duration-200"
-      style={{
-        backgroundImage: `url(${getBuildingImage(2)})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
-      <div className="absolute inset-0 bg-gray-900/60 dark:bg-gray-900/90"></div>
-      <div className="relative z-10">
-        <Navigation />
-        
-        {/* Hero Section */}
-        <div className="relative py-20 overflow-hidden">
-        {/* Geometric Background Pattern */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-yellow-400 transform rotate-45 -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute top-1/4 right-0 w-48 h-48 bg-orange-400 transform rotate-12 translate-x-1/4"></div>
-          <div className="absolute bottom-0 left-1/4 w-56 h-56 bg-pink-400 transform -rotate-12 -translate-y-1/4"></div>
-          <div className="absolute top-1/2 right-1/4 w-40 h-40 bg-blue-400 transform rotate-45"></div>
-        </div>
-        
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white/90 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 md:p-12 border border-gray-300/50 dark:border-gray-700/50">
-            <p className="text-gray-900 dark:text-white text-lg md:text-xl leading-relaxed">
-              Temukan sosok-sosok di balik tim luar biasa kami. Dengan pengalaman
-              yang luas dan dedikasi terhadap kesuksesan Anda, para pengacara kami
-              bukan hanya profesional di bidang hukum, tetapi juga mitra terpercaya
-              dalam perjalanan hukum Anda.
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-300 font-sans selection:bg-accent selection:text-white transition-colors duration-300">
+      {/* Industrial Grid Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        <div className="absolute top-0 right-0 w-1/3 h-full border-l border-slate-200 dark:border-slate-800/30"></div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-300/50 dark:border-gray-700/50 sticky top-16 z-40 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-2 py-4 overflow-x-auto">
-            {filters.map((filter) => (
-              <button
-                key={filter.id}
-                onClick={() => setActiveFilter(filter.id)}
-                className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors whitespace-nowrap ${
-                  activeFilter === filter.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 hover:bg-gray-300/80 dark:hover:bg-gray-700/80 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navigation variant="default" />
 
-      {/* Profile Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {loading && (
-            <div className="col-span-full text-center py-10 text-gray-600 dark:text-gray-400">
-              Memuat data profil...
-            </div>
-          )}
-
-          {!loading && error && (
-            <div className="col-span-full text-center py-10 text-red-600 dark:text-red-400">
-              {error}
-            </div>
-          )}
-
-          {!loading &&
-            !error &&
-            filteredProfiles.map((profile) => (
-              <div
-                key={profile.id}
-                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 relative group border border-gray-300/50 dark:border-gray-700/50"
-              >
-                {/* Star Icon */}
-                <div className="absolute bottom-2 right-2 z-10">
-                  <svg
-                    className="w-4 h-4 text-gray-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                </div>
-
-                {/* Profile Image */}
-                <div className="relative w-full aspect-square bg-gray-700 overflow-hidden">
-                  <img
-                    src={profile.photo || (profile as any).image || FALLBACK_PHOTO}
-                    alt={profile.name}
-                    className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-2"
-                    loading="lazy"
-                    decoding="async"
-                    fetchPriority="low"
-                    onError={(e) => {
-                      // Fallback to direct thumbnail if proxy fails
-                      const target = e.target as HTMLImageElement;
-                      const currentSrc = target.src;
-                      
-                      // Don't retry if already using fallback
-                      if (currentSrc === FALLBACK_PHOTO || currentSrc.includes('unsplash.com')) {
-                        return;
-                      }
-                      
-                      if (currentSrc.includes('images.weserv.nl')) {
-                        // Extract file ID from the proxied URL
-                        const fileIdMatch = currentSrc.match(/id=([a-zA-Z0-9_-]+)/);
-                        if (fileIdMatch && fileIdMatch[1]) {
-                          // Try direct thumbnail format
-                          target.src = `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w800`;
-                        } else {
-                          target.src = FALLBACK_PHOTO;
-                        }
-                      } else if (currentSrc.includes('drive.google.com')) {
-                        // If direct thumbnail also fails, use fallback
-                        target.src = FALLBACK_PHOTO;
-                      } else {
-                        // Unknown format, use fallback
-                        target.src = FALLBACK_PHOTO;
-                      }
-                    }}
-                  />
-                  {/* Overlay on hover */}
-                  <div className="absolute inset-0 bg-blue-900/0 group-hover:bg-blue-900/20 transition-colors duration-300"></div>
-                </div>
-
-                {/* Profile Info */}
-                <div className="p-4">
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">
-                    {profile.name}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-xs">{profile.title}</p>
-                  {profile.email && (
-                    <a
-                      href={`mailto:${profile.email}`}
-                      className="text-blue-600 dark:text-blue-400 text-xs hover:underline mt-1 block"
-                    >
-                      {profile.email}
-                    </a>
-                  )}
-                </div>
+        {/* Header Section */}
+        <div className="pt-32 pb-12 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur-sm transition-colors duration-300">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <span className="inline-block py-1 px-2 border border-accent/30 bg-accent/10 text-accent text-xs font-mono tracking-widest uppercase mb-4">
+                  Our Team
+                </span>
+                <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white uppercase tracking-tight transition-colors duration-300">
+                  Profiles
+                </h1>
               </div>
-            ))}
+              <p className="max-w-xl text-slate-600 dark:text-slate-400 text-sm leading-relaxed border-l-2 border-slate-300 dark:border-slate-800 pl-4 transition-colors duration-300">
+                Temukan sosok-sosok di balik tim luar biasa kami. Dengan pengalaman
+                yang luas dan dedikasi terhadap kesuksesan Anda.
+              </p>
+            </div>
+          </div>
         </div>
+
+        {/* Filter Bar */}
+        <div className="sticky top-16 z-40 bg-white/95 dark:bg-slate-950/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md transition-colors duration-300">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex overflow-x-auto no-scrollbar py-0">
+              {filters.map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => setActiveFilter(filter.id)}
+                  className={`
+                    px-6 py-4 text-xs font-bold tracking-widest uppercase transition-all duration-300 border-b-2 whitespace-nowrap
+                    ${activeFilter === filter.id
+                      ? 'border-accent text-slate-900 dark:text-white bg-slate-100 dark:bg-white/5'
+                      : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}
+                  `}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Profile Grid */}
+        <div className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {loading ? (
+              // Skeleton Loading Grid
+              Array.from({ length: 8 }).map((_, i) => (
+                <ProfileSkeleton key={i} />
+              ))
+            ) : error ? (
+              <div className="col-span-full py-20 text-center text-red-500 font-mono border border-red-900/30 bg-red-900/10 p-8">
+                ERROR: {error}
+              </div>
+            ) : (
+              filteredProfiles.map((profile) => (
+                <div
+                  key={profile.id}
+                  className="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-accent transition-all duration-300 shadow-sm hover:shadow-xl dark:shadow-none animate-in fade-in zoom-in-95 duration-500"
+                >
+                  {/* Hover Corner Accents */}
+                  <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-slate-900 dark:border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-slate-900 dark:border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-slate-900 dark:border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-slate-900 dark:border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                  {/* Profile Image */}
+                  <div className="relative aspect-[3/4] overflow-hidden bg-slate-200 dark:bg-slate-800 grayscale group-hover:grayscale-0 transition-all duration-500">
+                    <img
+                      src={profile.photo || (profile as any).image || FALLBACK_PHOTO}
+                      alt={profile.name}
+                      className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-transform duration-700 ease-out group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
+                    />
+
+                    {/* Industrial Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-slate-950 dark:via-transparent dark:to-transparent opacity-90"></div>
+
+                    {/* Floating Info */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                      <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight uppercase tracking-wide mb-1">
+                        {profile.name}
+                      </h3>
+                      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-3">
+                        {profile.title}
+                      </p>
+                      {profile.email && (
+                        <div className="border-t border-slate-200 dark:border-white/10 pt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                          <a
+                            href={`mailto:${profile.email}`}
+                            className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-mono truncate block"
+                          >
+                            {profile.email}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
 
           {!loading && !error && filteredProfiles.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 text-lg">No profiles found in this category.</p>
+            <div className="text-center py-20 border border-slate-200 dark:border-slate-800 border-dashed">
+              <p className="text-slate-500 font-mono">NO_DATA_FOUND</p>
             </div>
           )}
-      </div>
+        </div>
 
-      <Footer />
+        <Footer />
       </div>
     </div>
   );
 }
-

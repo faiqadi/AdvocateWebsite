@@ -5,14 +5,38 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 
-export default function Navigation() {
+interface SubMenuItem {
+  name: string;
+  href: string;
+  subItems?: { name: string; href: string }[];
+}
+
+interface MenuItem {
+  name: string;
+  href: string;
+  submenu?: SubMenuItem[];
+}
+
+interface NavigationProps {
+  variant?: 'home' | 'default';
+}
+
+export default function Navigation({ variant = 'default' }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [expandedMobileMenu, setExpandedMobileMenu] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Cleanup timeout on unmount
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -21,7 +45,7 @@ export default function Navigation() {
     };
   }, []);
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     { name: 'Home', href: '/' },
     {
       name: 'Law Firm',
@@ -72,278 +96,250 @@ export default function Navigation() {
     },
   ];
 
-  return (
-    <nav className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-colors duration-200 border-b border-gray-300/50 dark:border-gray-700/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-900 dark:text-white">
-              BAGUS LAW
-            </Link>
-          </div>
+  // Helper to determine text colors based on variant and state
+  const getTextColorClass = () => {
+    if (scrolled) return 'text-slate-900 dark:text-white';
+    // Not scrolled (transparent bg)
+    if (variant === 'home') return 'text-white'; // Always white on home hero
+    return 'text-slate-900 dark:text-white'; // Adapt to theme on internal pages
+  };
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-1">
-            {menuItems.map((item) => (
-              <div
-                key={item.name}
-                className="relative group"
-                onMouseEnter={() => {
-                  if (item.submenu) {
-                    // Clear any existing timeout
-                    if (timeoutRef.current) {
-                      clearTimeout(timeoutRef.current);
-                      timeoutRef.current = null;
-                    }
-                    setActiveDropdown(item.name);
-                  }
-                }}
-                onMouseLeave={() => {
-                  // Add delay before closing dropdown
-                  if (timeoutRef.current) {
-                    clearTimeout(timeoutRef.current);
-                  }
-                  timeoutRef.current = setTimeout(() => {
-                    setActiveDropdown(null);
-                  }, 200); // 200ms delay
-                }}
-              >
-                <Link
-                  href={item.href}
-                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                    pathname === item.href || 
-                    pathname?.startsWith(item.href + '/') ||
-                    (item.href === '/practice-areas' && pathname?.startsWith('/practice-areas'))
-                      ? 'text-white dark:text-white bg-blue-600 dark:bg-gray-800 font-semibold border border-blue-700 dark:border-gray-700'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
-                  }`}
-                >
-                  {item.name}
-                  {item.submenu && (
-                    <svg
-                      className="inline-block ml-1 w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  )}
-                </Link>
-                {item.submenu && activeDropdown === item.name && (
-                  <div 
-                    className={`absolute top-full z-50 mt-1 ${
-                      item.name === 'Practice Areas' 
-                        ? 'w-[800px] right-0' 
-                        : 'w-56 left-0'
-                    }`}
-                    onMouseEnter={() => {
-                      // Clear timeout when mouse enters dropdown
+  const getSubTextColorClass = () => {
+    if (scrolled) return 'text-slate-500';
+    if (variant === 'home') return 'text-slate-400';
+    return 'text-slate-500 dark:text-slate-400';
+  };
+
+  const getLinkClass = (isActive: boolean) => {
+    const baseClass = "px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 border border-transparent rounded-sm";
+
+    if (isActive) return `${baseClass} bg-accent text-white border-accent`;
+
+    if (scrolled) {
+      return `${baseClass} text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white`;
+    }
+
+    // Not scrolled
+    if (variant === 'home') {
+      return `${baseClass} text-white/80 hover:text-white hover:bg-white/10`;
+    }
+
+    return `${baseClass} text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10`;
+  };
+
+  const getMobileButtonClass = () => {
+    if (scrolled) return 'text-slate-900 dark:text-white';
+    if (variant === 'home') return 'text-white';
+    return 'text-slate-900 dark:text-white';
+  };
+
+  const getMobileLineClass = (isOpen: boolean) => {
+    if (isOpen) return 'bg-accent';
+    if (scrolled) return 'bg-slate-900 dark:bg-white';
+    if (variant === 'home') return 'bg-white';
+    return 'bg-slate-900 dark:bg-white';
+  };
+
+
+  return (
+    <>
+      <div className="hidden md:flex justify-between items-center bg-slate-900 text-slate-400 text-[10px] py-2 px-8 font-mono border-b border-white/5 tracking-wider z-50 relative">
+        <div className="flex gap-6">
+          <span className="flex items-center gap-2 hover:text-white transition-colors cursor-default">
+            <span className="w-1.5 h-1.5 bg-accent rounded-sm"></span>
+            JAKARTA, ID
+          </span>
+          <span className="hidden lg:inline">JL. PACUAN KUDA RAYA NO. 6</span>
+        </div>
+        <div className="flex gap-6">
+          <a href="tel:+622122868539" className="hover:text-white transition-colors">
+            +62 (21) 2286-8539
+          </a>
+          <a href="mailto:info@baguslawfirm.com" className="hover:text-white transition-colors">
+            INFO@BAGUSLAWFIRM.COM
+          </a>
+        </div>
+      </div>
+
+      <nav
+        className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'top-0 glass-industrial py-2' : 'top-0 md:top-[33px] bg-transparent py-6'
+          }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Link href="/" className="group flex flex-col">
+                <span className={`text-2xl font-bold tracking-tighter transition-colors ${getTextColorClass()}`}>
+                  BAGUS<span className="text-accent">LAW</span>
+                </span>
+                <span className={`text-[9px] font-mono tracking-[0.4em] uppercase ${getSubTextColorClass()}`}>FIRM & PARTNERS</span>
+              </Link>
+            </div>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-1">
+              {menuItems.map((item) => (
+                <div
+                  key={item.name}
+                  className="relative group"
+                  onMouseEnter={() => {
+                    if (item.submenu) {
                       if (timeoutRef.current) {
                         clearTimeout(timeoutRef.current);
                         timeoutRef.current = null;
                       }
                       setActiveDropdown(item.name);
-                    }}
-                    onMouseLeave={() => {
-                      // Add delay before closing dropdown
-                      if (timeoutRef.current) {
-                        clearTimeout(timeoutRef.current);
-                      }
-                      timeoutRef.current = setTimeout(() => {
-                        setActiveDropdown(null);
-                      }, 200); // 200ms delay
-                    }}
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (timeoutRef.current) {
+                      clearTimeout(timeoutRef.current);
+                    }
+                    timeoutRef.current = setTimeout(() => {
+                      setActiveDropdown(null);
+                    }, 200);
+                  }}
+                >
+                  <Link
+                    href={item.href}
+                    className={getLinkClass(pathname === item.href || pathname?.startsWith(item.href + '/') || (item.href === '/practice-areas' && pathname?.startsWith('/practice-areas')))}
                   >
-                    <div className={`bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-md shadow-xl border border-gray-300/50 dark:border-gray-700/50 ${
-                      item.name === 'Practice Areas' 
-                        ? 'py-4 px-6' 
-                        : 'py-2'
-                    }`}>
-                      {item.name === 'Practice Areas' ? (
-                        <div className="grid grid-cols-4 gap-4">
-                          {[
-                            // Column 1
-                            item.submenu.slice(0, 5),
-                            // Column 2
-                            item.submenu.slice(5, 10),
-                            // Column 3
-                            item.submenu.slice(10, 15),
-                            // Column 4
-                            item.submenu.slice(15, 20),
-                          ].map((column, colIndex) => (
-                            <div key={colIndex} className="space-y-1">
-                              {column.map((subItem) => (
-                                <Link
-                                  key={subItem.name}
-                                  href={subItem.href}
-                                  className={`block py-2 text-sm transition-colors border-b border-gray-300/50 dark:border-gray-700/50 ${
-                                    pathname === subItem.href
-                                      ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:text-blue-600 dark:hover:text-blue-400'
-                                  }`}
-                                >
-                                  {subItem.name}
-                                </Link>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        item.submenu.map((subItem) => (
-                          <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            className={`block px-4 py-3 text-sm transition-colors ${
-                              pathname === subItem.href
-                                ? 'text-blue-600 dark:text-blue-400 bg-gray-200/50 dark:bg-gray-700/50 font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white'
-                            }`}
-                          >
-                            {subItem.name}
-                          </Link>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-            {/* Theme Toggle */}
-            <ThemeToggle />
-          </div>
+                    {item.name}
+                  </Link>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => {
-                setIsMenuOpen(!isMenuOpen);
-                if (isMenuOpen) {
-                  setExpandedMobileMenu(null);
-                }
-              }}
-              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none"
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                  {item.submenu && activeDropdown === item.name && (
+                    <div
+                      className={`absolute top-full z-50 mt-2 ${item.name === 'Practice Areas'
+                        ? 'w-[800px] -right-20'
+                        : 'w-60 left-0'
+                        }`}
+                      onMouseEnter={() => {
+                        if (timeoutRef.current) {
+                          clearTimeout(timeoutRef.current);
+                          timeoutRef.current = null;
+                        }
+                        setActiveDropdown(item.name);
+                      }}
+                      onMouseLeave={() => {
+                        if (timeoutRef.current) {
+                          clearTimeout(timeoutRef.current);
+                        }
+                        timeoutRef.current = setTimeout(() => {
+                          setActiveDropdown(null);
+                        }, 200);
+                      }}
+                    >
+                      <div className="bg-slate-900 border border-slate-700 shadow-2xl p-6 rounded-sm">
+                        {/* Industrial Corner Accent */}
+                        <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-accent"></div>
+
+                        {item.name === 'Practice Areas' ? (
+                          <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                            {item.submenu.map((subItem) => (
+                              <Link
+                                key={subItem.name}
+                                href={subItem.href}
+                                className={`block py-2 text-xs font-medium text-slate-400 hover:text-white hover:translate-x-1 transition-all border-b border-slate-800 ${pathname === subItem.href ? 'text-accent border-accent/30' : ''
+                                  }`}
+                              >
+                                {subItem.name}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            {item.submenu.map((subItem) => (
+                              <Link
+                                key={subItem.name}
+                                href={subItem.href}
+                                className={`block px-4 py-3 text-xs font-medium text-slate-300 hover:bg-white/5 hover:text-white border-l-2 border-transparent hover:border-accent transition-all ${pathname === subItem.href ? 'bg-white/5 text-white border-accent' : ''
+                                  }`}
+                              >
+                                {subItem.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <div className="ml-4 pl-4 border-l border-white/20">
+                <ThemeToggle />
+              </div>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => {
+                  setIsMenuOpen(!isMenuOpen);
+                  if (isMenuOpen) setExpandedMobileMenu(null);
+                }}
+                className={`p-2 rounded-sm transition-colors ${getMobileButtonClass()}`}
               >
-                {isMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
+                <div className="space-y-1.5">
+                  <span className={`block w-6 h-0.5 transition-transform ${isMenuOpen ? 'rotate-45 translate-y-2 bg-accent' : getMobileLineClass(isMenuOpen)}`}></span>
+                  <span className={`block w-6 h-0.5 transition-opacity ${isMenuOpen ? 'opacity-0' : getMobileLineClass(isMenuOpen)}`}></span>
+                  <span className={`block w-6 h-0.5 transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-2 bg-accent' : getMobileLineClass(isMenuOpen)}`}></span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-300/50 dark:border-gray-700/50">
+        {/* Mobile Menu */}
+        <div
+          className={`md:hidden fixed inset-x-0 bg-slate-900 border-b border-slate-800 shadow-2xl transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-[80vh] opacity-100 top-[64px]' : 'max-h-0 opacity-0 top-[64px]'
+            }`}
+        >
+          <div className="p-4 space-y-1">
             {menuItems.map((item) => (
-              <div key={item.name}>
+              <div key={item.name} className="border-b border-slate-800 last:border-0">
                 {item.submenu ? (
-                  <>
+                  <div>
                     <button
-                      onClick={() => {
-                        setExpandedMobileMenu(
-                          expandedMobileMenu === item.name ? null : item.name
-                        );
-                      }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-base font-medium rounded-md ${
-                        pathname === item.href || pathname?.startsWith(item.href + '/')
-                          ? 'text-white dark:text-white bg-blue-600 dark:bg-gray-800 font-semibold'
-                          : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
-                      }`}
+                      onClick={() => setExpandedMobileMenu(expandedMobileMenu === item.name ? null : item.name)}
+                      className="w-full flex justify-between items-center py-3 text-sm font-bold text-slate-300 uppercase tracking-wide"
                     >
-                      <span>{item.name}</span>
-                      <svg
-                        className={`w-5 h-5 transition-transform ${
-                          expandedMobileMenu === item.name ? 'rotate-180' : ''
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                      {item.name}
+                      <span className={`text-accent transition-transform ${expandedMobileMenu === item.name ? 'rotate-180' : ''}`}>▼</span>
                     </button>
                     {expandedMobileMenu === item.name && (
-                      <div
-                        className={`pl-4 space-y-1 mt-1 ${
-                          item.name === 'Practice Areas'
-                            ? 'max-h-96 overflow-y-auto'
-                            : ''
-                        }`}
-                      >
+                      <div className="bg-slate-950/50 p-3 space-y-2 mb-2">
                         {item.submenu.map((subItem) => (
                           <Link
                             key={subItem.name}
                             href={subItem.href}
-                            className={`block px-3 py-2 text-sm rounded-md ${
-                              pathname === subItem.href
-                                ? 'text-blue-600 dark:text-blue-400 bg-gray-200/50 dark:bg-gray-800 font-semibold'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
-                            }`}
-                            onClick={() => {
-                              setIsMenuOpen(false);
-                              setExpandedMobileMenu(null);
-                            }}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="block text-xs text-slate-400 hover:text-white py-1 pl-2 border-l border-slate-700 hover:border-accent transition-colors"
                           >
                             {subItem.name}
                           </Link>
                         ))}
                       </div>
                     )}
-                  </>
+                  </div>
                 ) : (
                   <Link
                     href={item.href}
-                    className={`block px-3 py-2 text-base font-medium rounded-md ${
-                      pathname === item.href
-                        ? 'text-white dark:text-white bg-blue-600 dark:bg-gray-800 font-semibold'
-                        : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
-                    }`}
                     onClick={() => setIsMenuOpen(false)}
+                    className="block py-3 text-sm font-bold text-slate-300 hover:text-white uppercase tracking-wide"
                   >
                     {item.name}
                   </Link>
                 )}
               </div>
             ))}
-            {/* Theme Toggle for Mobile */}
-            <div className="px-3 py-2">
+            <div className="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center">
+              <span className="text-xs text-slate-500 font-mono">APPEARANCE</span>
               <ThemeToggle />
             </div>
           </div>
         </div>
-      )}
-    </nav>
+      </nav>
+    </>
   );
 }
-
