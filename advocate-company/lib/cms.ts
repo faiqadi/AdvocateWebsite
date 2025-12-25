@@ -163,6 +163,29 @@ export interface ProfileCategory {
   order?: number;
 }
 
+export interface ContactInfo {
+  id: string;
+  officeName: string;
+  buildingName: string;
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  phone: string;
+  email: string;
+  mapsUrl: string;
+  mapsEmbedUrl: string;
+  latitude?: number;
+  longitude?: number;
+  socialLinks?: {
+    linkedin?: string;
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+  };
+  order?: number;
+}
+
 /**
  * Fetch articles from Google Sheets
  */
@@ -646,6 +669,39 @@ export async function getProfileCategories(): Promise<ProfileCategory[]> {
     return categories;
   } catch (error) {
     console.error('Error fetching profile categories:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch Contact Information from Google Sheets
+ */
+export async function getContactInfo(): Promise<ContactInfo[]> {
+  try {
+    const data = await getSheetData('ContactInfo');
+
+    const contacts: ContactInfo[] = data.map((row: any, index: number) => ({
+      id: row.id || `contact-${index}`,
+      officeName: row.officeName || `Office ${index + 1}`,
+      buildingName: row.buildingName || '',
+      address: row.address || '',
+      city: row.city || '',
+      province: row.province || '',
+      postalCode: row.postalCode || '',
+      phone: row.phone || '',
+      email: row.email || '',
+      mapsUrl: row.mapsUrl || '',
+      mapsEmbedUrl: row.mapsEmbedUrl || '',
+      latitude: row.latitude ? parseFloat(row.latitude) : undefined,
+      longitude: row.longitude ? parseFloat(row.longitude) : undefined,
+      socialLinks: row.socialLinks ? JSON.parse(row.socialLinks) : {},
+      order: parseInt(row.order || index.toString()),
+    }));
+
+    contacts.sort((a, b) => (a.order || 0) - (b.order || 0));
+    return contacts;
+  } catch (error) {
+    console.error('Error fetching contact info:', error);
     return [];
   }
 }

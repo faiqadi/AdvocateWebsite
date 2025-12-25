@@ -86,17 +86,6 @@ export default function Footer() {
                 <a href="tel:6285703444000" className="text-white hover:text-accent text-lg font-bold block transition-colors">+62 857-0344-4000</a>
               </div>
               <div className="h-[1px] bg-slate-900"></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="block text-xs font-mono text-slate-600 uppercase mb-1">Jakarta</span>
-                  <a href="tel:0211234567" className="hover:text-white transition-colors">021-1234567</a>
-                </div>
-                <div>
-                  <span className="block text-xs font-mono text-slate-600 uppercase mb-1">Semarang</span>
-                  <a href="tel:0241234567" className="hover:text-white transition-colors">024-1234567</a>
-                </div>
-              </div>
-              <div className="h-[1px] bg-slate-900"></div>
               <div>
                 <span className="block text-xs font-mono text-slate-600 uppercase mb-1">Email Inquiry</span>
                 <a href="mailto:info@eshlaw.id" className="hover:text-white transition-colors">info@eshlaw.id</a>

@@ -40,3 +40,4 @@ export function getRandomBuildingImage(): string {
 
 
 
+
