@@ -74,18 +74,23 @@ export default function ManfaatKerjaSamaSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {benefits.map((benefit, index) => (
             <ScrollAnimation key={benefit.id} direction="up" delay={index * 100}>
-              <div className="group bg-white dark:bg-slate-900 p-8 border border-slate-200 dark:border-slate-800 hover:border-accent transition-all duration-300 relative overflow-hidden">
+              <div className="group bg-white dark:bg-slate-900 p-6 md:p-8 border border-slate-200 dark:border-slate-800 hover:border-accent transition-all duration-300 relative overflow-hidden">
                 {/* Hover Background Effect */}
-                <div className="absolute inset-0 bg-accent/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+                <div className="absolute inset-0 bg-slate-100 dark:bg-slate-800 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out hazard-stripe opacity-20"></div>
 
                 <div className="relative z-10">
-                  <div className="text-5xl font-bold text-slate-200 dark:text-slate-800 mb-6 font-mono group-hover:text-accent/20 transition-colors">
-                    {benefit.icon}
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="text-5xl font-bold text-slate-200 dark:text-slate-800 font-mono group-hover:text-accent/40 transition-colors" style={{ fontFamily: 'monospace' }}>
+                      {benefit.icon}
+                    </div>
+                    {/* Technical Decor */}
+                    <div className="w-8 h-8 border-t border-r border-slate-300 dark:border-slate-700 group-hover:border-accent transition-colors"></div>
                   </div>
+
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wide group-hover:text-accent transition-colors">
                     {benefit.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm border-l-2 border-transparent group-hover:border-accent/50 pl-0 group-hover:pl-4 transition-all duration-300">
                     {benefit.description}
                   </p>
                 </div>

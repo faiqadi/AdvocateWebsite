@@ -6,14 +6,16 @@
 // Web App URL from environment variable
 const WEB_APP_URL = process.env.GOOGLE_WEB_APP_URL || '';
 
+console.log('GOOGLE_WEB_APP_URL status:', WEB_APP_URL ? 'SET' : 'NOT SET');
+
 /**
  * Get all rows from a specific sheet
  */
 export async function getSheetData(sheetName: string, params?: Record<string, string>): Promise<any[]> {
   try {
     if (!WEB_APP_URL) {
-      console.warn('GOOGLE_WEB_APP_URL not set, returning empty array');
-      return [];
+      console.error('GOOGLE_WEB_APP_URL not set in environment variables');
+      throw new Error('GOOGLE_WEB_APP_URL is not configured. Please set it in .env.local file.');
     }
 
     // Build query parameters

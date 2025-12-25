@@ -3,93 +3,33 @@
 import Link from 'next/link';
 import ScrollAnimation from './ScrollAnimation';
 
-const practiceAreas = [
-  {
-    id: 1,
-    title: 'Antimonopoli dan Perdagangan Internasional',
-    description:
-      'Bagus Law memberikan nasihat hukum di sektor persaingan usaha dan anti-monopoli.',
-  },
-  {
-    id: 2,
-    title: 'Ketenagakerjaan',
-    description:
-      'Di bidang keimigrasian dan hukum perburuhan, kami memberikan saran tentang: permohonan izin tinggal dan izin kerja bagi tenaga kerja asing, penyusunan kontrak kerja, kebijakan dan praktik personel',
-  },
-  {
-    id: 3,
-    title: 'Kejahatan Penipuan dan Investigasi Forensik',
-    description:
-      'Rezim penegakan yang ketat saat ini menuntut klien untuk tidak hanya untuk mematuhi peraturan, tetapi juga untuk berinvestasi dalam program pencegahan.',
-  },
-  {
-    id: 4,
-    title: 'Perbankan dan Keuangan',
-    description:
-      'Bagus Law kerap memberikan nasihat kepada lembaga keuangan dan perusahaan besar.',
-  },
-  {
-    id: 5,
-    title: 'Pasar Modal',
-    description:
-      'Bagus Law sering memberikan saran terkait dengan penawaran asing oleh emiten yang memiliki kepentingan signifikan di Indonesia.',
-  },
-  {
-    id: 6,
-    title: 'Kesehatan',
-    description:
-      'Bagus Law menyediakan jasa dalam menyarankan investor tentang pendirian, akuisisi, operasi rumah sakit dan klinik swasta.',
-  },
-  {
-    id: 7,
-    title: 'Minyak & Gas',
-    description:
-      'Firma Hukum pada Bidang Minyak dan Gas. Memberikan Saran Hukum yang efektif.',
-  },
-  {
-    id: 8,
-    title: 'Merger dan Akuisisi',
-    description:
-      'Bagus Law memberikan nasihat hukum komprehensif untuk transaksi merger dan akuisisi.',
-  },
-  {
-    id: 9,
-    title: 'Litigasi and Alternative Dispute Resolution',
-    description:
-      'Tim terbaik dari kantor kami memberikan analisa, nasehat serta tindakan hukum secara profesional.',
-  },
-  {
-    id: 10,
-    title: 'PKPU dan Kepailitan',
-    description:
-      'Bagus Law menyediakan layanan hukum untuk Penundaan Kewajiban Pembayaran Utang dan Kepailitan.',
-  },
-  {
-    id: 11,
-    title: 'Perumahan dan Aset',
-    description:
-      'Kami memberikan nasihat hukum terkait perumahan dan pengelolaan aset.',
-  },
-  {
-    id: 12,
-    title: 'Pembiayaan Keuangan',
-    description:
-      'Bagus Law memberikan nasihat hukum untuk berbagai skema pembiayaan keuangan.',
-  },
-];
+interface PracticeArea {
+  id: string | number;
+  title: string;
+  description: string;
+  slug: string;
+  icon?: string;
+}
 
-export default function PracticeAreasSection() {
+interface PracticeAreasSectionProps {
+  practiceAreas?: PracticeArea[];
+}
+
+export default function PracticeAreasSection({ practiceAreas = [] }: PracticeAreasSectionProps) {
+  // Use passed data or fallback to empty array
+  const displayAreas = practiceAreas.length > 0 ? practiceAreas : [];
+
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <ScrollAnimation direction="up">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Wilayah Praktek
             </h2>
           </ScrollAnimation>
           <ScrollAnimation direction="up" delay={100}>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
               Tim terbaik dari kantor kami memberikan analisa, nasehat serta
               tindakan hukum secara profesional.
             </p>
@@ -97,18 +37,22 @@ export default function PracticeAreasSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {practiceAreas.map((area, index) => (
+          {displayAreas.map((area, index) => (
             <ScrollAnimation key={area.id} direction="up" delay={index * 50}>
-              <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300 hover:border-accent border border-transparent hover:-translate-y-1">
+                {area.icon && <div className="text-4xl mb-4">{area.icon}</div>}
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                   {area.title}
                 </h3>
-                <p className="text-gray-700 mb-4">{area.description}</p>
+                <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">{area.description}</p>
                 <Link
-                  href="/practice-areas"
-                  className="text-blue-900 font-semibold hover:underline"
+                  href={`/practice-areas/${area.slug}`}
+                  className="text-accent font-semibold hover:underline inline-flex items-center"
                 >
-                  Detail →
+                  Detail
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
                 </Link>
               </div>
             </ScrollAnimation>

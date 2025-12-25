@@ -37,3 +37,5 @@ export function getRandomBuildingImage(): string {
   return buildingImages[randomIndex];
 }
 
+
+

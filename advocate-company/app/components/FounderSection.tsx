@@ -4,57 +4,73 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ScrollAnimation from './ScrollAnimation';
 import { getBuildingImage } from '@/lib/building-images';
+import { fetchWithCache } from '@/lib/cache-client';
 
 interface Founder {
   id: string;
   name: string;
   title: string;
   description: string;
-  initials: string;
+  slug?: string;
   photo?: string;
+  order?: number;
 }
-
-const founders: Founder[] = [
-  {
-    id: '1',
-    name: 'BAGUS PRATAMA, S.H., M.H., CTL',
-    title: 'Founder & Senior Lawyer',
-    description: 'Sebagai pendiri Bagus Law Firm, saya berkomitmen untuk memberikan layanan hukum terbaik dengan pengalaman lebih dari satu dekade di bidang hukum domestik dan internasional. Dengan tim yang profesional dan berdedikasi, kami siap membantu menyelesaikan berbagai kebutuhan hukum Anda.',
-    initials: 'BP',
-  },
-  {
-    id: '2',
-    name: 'FOUNDER KEDUA',
-    title: 'Founder & Senior Lawyer',
-    description: 'Deskripsi founder kedua. Sebagai salah satu pendiri Bagus Law Firm, saya memiliki pengalaman luas dalam berbagai bidang hukum dan berkomitmen untuk memberikan solusi hukum yang tepat dan efektif bagi klien kami.',
-    initials: 'FK',
-  },
-];
 
 export default function FounderSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [founders, setFounders] = useState<Founder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % founders.length);
-    }, 8000);
+    async function fetchFounders() {
+      setLoading(true);
+      setError('');
+      try {
+        const json = await fetchWithCache<{ docs: Founder[]; totalDocs: number }>(
+          '/api/cms/founders'
+        );
+        // Artificial delay for smoother transition feel
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setFounders(json.docs || []);
+      } catch (err: any) {
+        console.error('Error fetching founders:', err);
+        // Don't show error for founders, just use empty array
+        setFounders([]);
+        setError('');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFounders();
+  }, []);
+
+  useEffect(() => {
+    if (founders.length > 0) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % founders.length);
+      }, 8000);
+    }
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, []);
+  }, [founders]);
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % founders.length);
-    }, 8000);
+    if (founders.length > 0) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % founders.length);
+      }, 8000);
+    }
   };
 
   return (
@@ -84,71 +100,120 @@ export default function FounderSection() {
 
         <div className="max-w-5xl mx-auto">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-8 md:p-12">
+            <div className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-6 md:p-12">
               {/* Industrial Top Decoration */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-accent"></div>
 
-              <div className="relative min-h-[400px] md:min-h-[350px]">
-                {founders.map((founder, index) => (
-                  <div
-                    key={founder.id}
-                    className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === currentIndex
-                      ? 'opacity-100 translate-x-0'
-                      : 'opacity-0 translate-x-8 pointer-events-none'
-                      }`}
-                  >
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
-                      <div className="flex-shrink-0 relative group">
-                        {/* Photo Frame */}
-                        <div className="absolute inset-0 border-2 border-slate-700 translate-x-3 translate-y-3 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform"></div>
-
-                        {founder.photo ? (
-                          <img
-                            src={founder.photo}
-                            alt={founder.name}
-                            className="w-48 h-48 md:w-56 md:h-56 object-cover bg-slate-800 relative z-10 grayscale group-hover:grayscale-0 transition-all duration-500"
-                          />
-                        ) : (
-                          <div className="w-48 h-48 md:w-56 md:h-56 bg-slate-800 relative z-10 flex items-center justify-center border border-slate-700 group-hover:border-accent transition-colors">
-                            <span className="text-6xl font-bold text-slate-600 font-mono">{founder.initials}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1 text-center md:text-left pt-2">
-                        <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">
-                          {founder.name}
-                        </h3>
-                        <p className="text-accent font-mono text-sm tracking-widest mb-6 uppercase">
-                          {founder.title}
-                        </p>
-                        <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-8 text-lg font-light">
-                          {founder.description}
-                        </p>
-
-                        <Link
-                          href="/profiles"
-                          className="inline-flex items-center gap-2 text-slate-900 dark:text-white border-b border-slate-400 dark:border-slate-600 hover:border-accent pb-1 transition-colors uppercase text-sm font-bold tracking-wider"
-                        >
-                          Full Profile <span className="text-accent">→</span>
-                        </Link>
-                      </div>
+              <div className="relative min-h-[600px] md:min-h-[350px]">
+                {loading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="space-y-4 text-center">
+                      <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      <p className="text-slate-500 font-mono text-sm">LOADING FOUNDERS...</p>
                     </div>
                   </div>
-                ))}
+                ) : error ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center text-red-500 font-mono border border-red-900/30 bg-red-900/10 p-8">
+                      <p className="text-lg mb-2">ERROR</p>
+                      <p className="text-sm">{error}</p>
+                    </div>
+                  </div>
+                ) : founders.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center text-slate-500 font-mono">
+                      <p className="text-lg mb-2">NO_DATA_FOUND</p>
+                      <p className="text-sm">No founders data available</p>
+                    </div>
+                  </div>
+                ) : (
+                  founders.map((founder, index) => (
+                    <div
+                      key={founder.id}
+                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === currentIndex
+                        ? 'opacity-100 translate-x-0'
+                        : 'opacity-0 translate-x-8 pointer-events-none'
+                        }`}
+                    >
+                      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12 pb-16 md:pb-0">
+                        <div className="flex-shrink-0 relative group mt-4 md:mt-0">
+                          {/* Photo Frame - Industrial Brackets */}
+                          <div className="absolute -top-2 -left-2 w-6 h-6 md:w-8 md:h-8 border-t-2 border-l-2 border-slate-400 dark:border-slate-600 transition-all group-hover:border-accent"></div>
+                          <div className="absolute -top-2 -right-2 w-6 h-6 md:w-8 md:h-8 border-t-2 border-r-2 border-slate-400 dark:border-slate-600 transition-all group-hover:border-accent"></div>
+                          <div className="absolute -bottom-2 -left-2 w-6 h-6 md:w-8 md:h-8 border-b-2 border-l-2 border-slate-400 dark:border-slate-600 transition-all group-hover:border-accent"></div>
+                          <div className="absolute -bottom-2 -right-2 w-6 h-6 md:w-8 md:h-8 border-b-2 border-r-2 border-slate-400 dark:border-slate-600 transition-all group-hover:border-accent"></div>
+
+                          {/* ID Tag */}
+                          <div className="absolute top-2 -left-4 md:top-4 md:-left-6 bg-accent text-white text-[8px] md:text-[10px] font-mono px-2 py-1 -rotate-90 origin-center tracking-widest z-20 shadow-lg">
+                            {/* ID: {founder.name.split(' ').map(n => n[0]).join('').toUpperCase()}_00{founder.id} */}
+                          </div>
+
+                          {founder.photo ? (
+                            <>
+                              <img
+                                src={founder.photo}
+                                alt={founder.name}
+                                onError={(e) => {
+                                  console.error(`Failed to load founder image for ${founder.name}:`, founder.photo);
+                                  const img = e.currentTarget as HTMLImageElement;
+                                  const fallback = img.parentElement?.querySelector('.fallback-avatar') as HTMLElement;
+                                  if (img && fallback) {
+                                    img.style.display = 'none';
+                                    fallback.style.display = 'flex';
+                                  }
+                                }}
+                                className="w-50 h-70 md:w-66 md:h-86 object-cover relative z-10 md:grayscale md:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 border border-slate-300 dark:border-slate-700"
+                              />
+                              <div className="fallback-avatar w-40 h-40 md:w-56 md:h-56 bg-slate-100 dark:bg-slate-800 absolute inset-0 z-10 flex items-center justify-center border border-slate-300 dark:border-slate-700 group-hover:border-accent transition-colors blueprint-grid" style={{ display: 'none' }}>
+                                <span className="text-5xl md:text-6xl font-bold text-slate-300 dark:text-slate-600 font-mono">
+                                  {founder.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="w-40 h-40 md:w-56 md:h-56 bg-slate-100 dark:bg-slate-800 relative z-10 flex items-center justify-center border border-slate-300 dark:border-slate-700 group-hover:border-accent transition-colors blueprint-grid">
+                              <span className="text-5xl md:text-6xl font-bold text-slate-300 dark:text-slate-600 font-mono">
+                                {founder.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 text-center md:text-left pt-2">
+                          <h3 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">
+                            {founder.name}
+                          </h3>
+                          <p className="text-accent font-mono text-xs md:text-sm tracking-widest mb-4 md:mb-6 uppercase">
+                            {founder.title}
+                          </p>
+                          <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6 md:mb-8 text-base md:text-lg font-light">
+                            {founder.description}
+                          </p>
+
+                          <Link
+                            href={`/profiles/${founder.slug}`}
+                            className="inline-flex items-center gap-2 text-slate-900 dark:text-white border-b border-slate-400 dark:border-slate-600 hover:border-accent pb-1 transition-colors uppercase text-xs md:text-sm font-bold tracking-wider"
+                          >
+                            Full Profile <span className="text-accent">→</span>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Angle Navigation */}
-              <div className="absolute bottom-6 right-6 flex gap-2">
+              <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 flex gap-2 z-20">
                 <button
                   onClick={() => goToSlide((currentIndex - 1 + founders.length) % founders.length)}
-                  className="w-10 h-10 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="w-8 h-8 md:w-10 md:h-10 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   ←
                 </button>
                 <button
                   onClick={() => goToSlide((currentIndex + 1) % founders.length)}
-                  className="w-10 h-10 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="w-8 h-8 md:w-10 md:h-10 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   →
                 </button>

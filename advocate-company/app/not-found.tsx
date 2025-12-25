@@ -1,6 +1,17 @@
+'use client';
+
 import Link from 'next/link';
-import Navigation from './components/Navigation';
-import Footer from './components/Footer';
+import dynamic from 'next/dynamic';
+
+// Dynamic import to avoid potential issues
+const Navigation = dynamic(() => import('./components/Navigation'), {
+  loading: () => <div className="h-16 bg-slate-900 animate-pulse" />,
+  ssr: false
+});
+
+const Footer = dynamic(() => import('./components/Footer'), {
+  loading: () => <div className="h-48 bg-gray-900 animate-pulse" />,
+});
 
 export default function NotFound() {
   return (

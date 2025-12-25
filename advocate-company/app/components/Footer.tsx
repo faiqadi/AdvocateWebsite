@@ -26,7 +26,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           {/* About */}
           <div className="md:col-span-4">
-            <h3 className="text-lg font-bold mb-6 tracking-widest uppercase text-white border-b-2 border-accent inline-block pb-1">BAGUS LAW FIRM</h3>
+            <h3 className="text-lg font-bold mb-6 tracking-widest uppercase text-white border-b-2 border-accent inline-block pb-1">ESH LAW OFFICE</h3>
             <p className="text-slate-400 mb-6 leading-relaxed text-sm">
               Lawfirm kami telah bekerja dengan banyak perusahaan domestik dan
               internasional di berbagai sektor sehingga menciptakan dan
@@ -80,17 +80,21 @@ export default function Footer() {
               <div className="h-[1px] bg-slate-900"></div>
               <div>
                 <span className="block text-xs font-mono text-slate-600 uppercase mb-1">Email Inquiry</span>
-                <a href="mailto:info@baguslawfirm.com" className="hover:text-white transition-colors">info@baguslawfirm.com</a>
+                <a href="mailto:info@eshlaw.com" className="hover:text-white transition-colors">info@eshlaw.com</a>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600 font-mono uppercase tracking-wider">
-          <p>© 2024 BAGUS LAW FIRM. ALL RIGHTS RESERVED.</p>
+        <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 font-mono uppercase tracking-wider relative">
+          {/* Footer Technical Markers */}
+          <div className="absolute top-0 left-0 w-2 h-2 bg-slate-800"></div>
+          <div className="absolute top-0 right-0 w-2 h-2 bg-slate-800"></div>
+
+          <p>© 2024 ESH LAW OFFICE. // SYSTEM: ONLINE // VER: 2.0.4</p>
           <div className="flex gap-8 mt-4 md:mt-0">
-            <Link href="#" className="hover:text-slate-400">Privacy Policy</Link>
-            <Link href="#" className="hover:text-slate-400">Terms of Service</Link>
+            <Link href="#" className="hover:text-white transition-colors">[PRIVACY_POLICY]</Link>
+            <Link href="#" className="hover:text-white transition-colors">[TERMS_OF_SERVICE]</Link>
           </div>
         </div>
       </div>

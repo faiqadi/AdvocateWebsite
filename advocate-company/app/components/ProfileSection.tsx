@@ -9,6 +9,7 @@ interface Profile {
   education?: string;
   specialization?: string;
   experience?: string;
+  shortDescription?: string;
   email?: string;
 }
 
@@ -28,6 +29,7 @@ const profileData: Record<string, Profile[]> = {
       education: 'S.H., M.H., CTL',
       specialization: 'Corporate Law, Investment Law, Mining Law',
       experience: 'Lebih dari satu dekade pengalaman dalam hukum korporasi dan investasi',
+      shortDescription: 'Experienced legal professional with over a decade of expertise in corporate and investment law, dedicated to providing exceptional legal solutions.',
       email: 'bagus.pratama@baguslawfirm.com',
     },
   ],
@@ -39,6 +41,7 @@ const profileData: Record<string, Profile[]> = {
       education: 'S.H., LL.M.',
       specialization: 'Litigation, Alternative Dispute Resolution',
       experience: 'Pengalaman luas dalam litigasi dan arbitrase',
+      shortDescription: 'Skilled litigator with extensive experience in arbitration and dispute resolution, committed to achieving favorable outcomes for clients.',
     },
     {
       id: '3',
@@ -47,6 +50,7 @@ const profileData: Record<string, Profile[]> = {
       education: 'S.H., M.H.',
       specialization: 'Banking & Finance, Capital Markets',
       experience: 'Ahli dalam hukum perbankan dan pasar modal',
+      shortDescription: 'Expert in banking and capital markets law with comprehensive knowledge of financial regulations and market dynamics.',
     },
   ],
   'foreign-counsel': [
@@ -57,6 +61,7 @@ const profileData: Record<string, Profile[]> = {
       education: 'J.D., LL.M.',
       specialization: 'International Law, Cross-border Transactions',
       experience: 'International legal expert with global experience',
+      shortDescription: 'International legal expert specializing in cross-border transactions and global business law with extensive worldwide experience.',
     },
   ],
   'senior-associates': [
@@ -67,6 +72,7 @@ const profileData: Record<string, Profile[]> = {
       education: 'S.H.',
       specialization: 'Corporate Law, M&A',
       experience: 'Pengalaman dalam transaksi merger dan akuisisi',
+      shortDescription: 'Dedicated corporate lawyer with proven expertise in mergers and acquisitions, providing strategic legal counsel for business transactions.',
     },
     {
       id: '6',
@@ -84,6 +90,7 @@ const profileData: Record<string, Profile[]> = {
       title: 'Junior Associate',
       education: 'S.H.',
       specialization: 'General Corporate Law',
+      shortDescription: 'Aspiring corporate lawyer with strong foundation in business law, committed to delivering quality legal services and professional growth.',
     },
     {
       id: '8',

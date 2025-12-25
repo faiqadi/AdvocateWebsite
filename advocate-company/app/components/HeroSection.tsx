@@ -75,13 +75,16 @@ export default function HeroSection() {
     <div className="relative h-screen min-h-[700px] flex flex-col md:flex-row overflow-hidden bg-white dark:bg-slate-950 transition-colors duration-300">
 
       {/* Left Column: Content */}
-      <div className="relative w-full md:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 z-20 bg-white/95 dark:bg-slate-950/90 md:bg-white md:dark:bg-slate-950 transition-colors duration-300">
+      <div className="relative w-full md:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 z-20 bg-white/70 dark:bg-slate-950/70 backdrop-blur-sm md:backdrop-blur-none md:bg-white md:dark:bg-slate-950 transition-colors duration-300">
 
         {/* Decorative Industrial Background Elements for Left Side */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-slate-200 dark:bg-slate-800/50"></div>
-          <div className="absolute bottom-12 right-0 w-64 h-64 border border-slate-200 dark:border-slate-800/20 rounded-full opacity-20"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-slate-300 dark:bg-slate-800"></div>
+          <div className="absolute bottom-12 right-0 w-64 h-64 border border-slate-300 dark:border-slate-800 rounded-full opacity-30 border-dashed"></div>
+          {/* Crosshairs */}
+          <div className="absolute top-10 left-10 w-4 h-4 border-l border-t border-slate-400 dark:border-slate-600"></div>
+          <div className="absolute bottom-10 right-10 w-4 h-4 border-r border-b border-slate-400 dark:border-slate-600"></div>
         </div>
 
         {/* Content Slider */}
@@ -138,12 +141,20 @@ export default function HeroSection() {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`h-1.5 transition-all duration-300 ${index === currentSlide
-                  ? 'bg-accent w-8'
-                  : 'bg-slate-300 dark:bg-slate-800 w-4 hover:bg-slate-400 dark:hover:bg-slate-700'
+                className={`h-2 transition-all duration-300 ${index === currentSlide
+                  ? 'bg-accent w-12'
+                  : 'bg-slate-300 dark:bg-slate-800 w-2 hover:bg-slate-400 dark:hover:bg-slate-700'
                   }`}
                 aria-label={`Go to slide ${index + 1}`}
-              />
+              >
+                {/* Mechanical Tick for Active Slide */}
+                {index === currentSlide && (
+                  <span className="block w-full h-full relative overflow-hidden">
+                    <span className="absolute top-0 right-0 w-[1px] h-full bg-white/50"></span>
+                    <span className="absolute bottom-0 left-0 w-[1px] h-full bg-white/50"></span>
+                  </span>
+                )}
+              </button>
             ))}
           </div>
           <button
@@ -168,7 +179,7 @@ export default function HeroSection() {
             }}
           >
             {/* Overlay for text readability on mobile, reduced on desktop */}
-            <div className="absolute inset-0 bg-white/70 dark:bg-slate-950/80 md:bg-slate-100/40 md:dark:bg-slate-950/30 md:mix-blend-multiply transition-colors duration-500"></div>
+            <div className="absolute inset-0 bg-black/10 dark:bg-black/20 md:bg-slate-100/40 md:dark:bg-slate-950/30 md:mix-blend-multiply transition-colors duration-500"></div>
 
             {/* Industrial Overlay Texture */}
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDIwMCwyMDAsMC4wNSkiLz48L3N2Zz4=')] opacity-20"></div>
@@ -179,7 +190,10 @@ export default function HeroSection() {
         <div className="absolute bottom-10 right-10 hidden md:block z-20">
           <div className="text-right">
             <div className="text-4xl font-bold text-slate-900/10 dark:text-white/10 font-mono">0{currentSlide + 1}</div>
-            <div className="text-xs text-slate-900/20 dark:text-white/20 font-mono tracking-widest">CURRENT DISPLAY</div>
+            <div className="text-xs text-slate-900/20 dark:text-white/20 font-mono tracking-widest uppercase">
+              System: Active<br />
+              Coords: {30 + currentSlide * 10}.{45 + currentSlide * 5} N, {100 + currentSlide * 2}.{20 + currentSlide * 8} E
+            </div>
           </div>
         </div>
       </div>

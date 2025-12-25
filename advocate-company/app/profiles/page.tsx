@@ -2,10 +2,18 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import Navigation from '../components/Navigation';
 import type { Profile } from '@/lib/cms';
 import { fetchWithCache } from '@/lib/cache-client';
 import { getBuildingImage } from '@/lib/building-images';
+
+interface ProfileCategory {
+  id: string;
+  category: string;
+  titleCategory: string;
+  order?: number;
+}
 
 // Lazy load Footer
 const Footer = dynamic(() => import('../components/Footer'), {
@@ -30,56 +38,179 @@ function ProfileSkeleton() {
 
 export default function ProfilesPage() {
   const [activeFilter, setActiveFilter] = useState('all');
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]); // Store all profiles data
+  const [profiles, setProfiles] = useState<Profile[]>([]); // Filtered profiles for display
+  const [categories, setCategories] = useState<ProfileCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const filters = [
-    { id: 'all', label: 'ALL' },
-    { id: 'managing-partners', label: 'MANAGING PARTNERS' },
-    { id: 'partners', label: 'PARTNERS' },
-    { id: 'foreign-partners', label: 'FOREIGN PARTNERS' },
-    { id: 'senior-associates', label: 'SENIOR ASSOCIATES' },
-    { id: 'junior-associates', label: 'JUNIOR ASSOCIATES' },
-    { id: 'associates', label: 'ASSOCIATES' },
-    { id: 'legal-staff', label: 'LEGAL STAFF' },
-  ];
+  // Create filters from categories data
+  const filters = useMemo(() => {
+    const dynamicFilters = categories.map(cat => ({
+      id: cat.category,
+      label: cat.titleCategory.toUpperCase()
+    }));
 
+    return [
+      { id: 'all', label: 'ALL' },
+      ...dynamicFilters
+    ];
+  }, [categories]);
+
+
+  // Fetch profile categories on component mount
   useEffect(() => {
-    async function fetchProfiles() {
+    async function fetchCategories() {
+      setCategoriesLoading(true);
+      try {
+        const json = await fetchWithCache<{ docs: ProfileCategory[]; totalDocs: number }>(
+          '/api/cms/profile-categories'
+        );
+        const cats = json.docs || [];
+        // Fallback to default categories if API fails
+        setCategories(cats.length > 0 ? cats : [
+          { id: '1', category: 'managing-partners', titleCategory: 'Managing Partners', order: 1 },
+          { id: '2', category: 'partners', titleCategory: 'Partners', order: 2 },
+          { id: '3', category: 'foreign-partners', titleCategory: 'Foreign Partners', order: 3 },
+          { id: '4', category: 'senior-associates', titleCategory: 'Senior Associates', order: 4 },
+          { id: '5', category: 'junior-associates', titleCategory: 'Junior Associates', order: 5 },
+          { id: '6', category: 'associates', titleCategory: 'Associates', order: 6 },
+          { id: '7', category: 'legal-staff', titleCategory: 'Legal Staff', order: 7 },
+        ]);
+      } catch (err: any) {
+        console.error('Error fetching profile categories:', err);
+        // Fallback to default categories if API fails
+        setCategories([
+          { id: '1', category: 'managing-partners', titleCategory: 'Managing Partners', order: 1 },
+          { id: '2', category: 'partners', titleCategory: 'Partners', order: 2 },
+          { id: '3', category: 'foreign-partners', titleCategory: 'Foreign Partners', order: 3 },
+          { id: '4', category: 'senior-associates', titleCategory: 'Senior Associates', order: 4 },
+          { id: '5', category: 'junior-associates', titleCategory: 'Junior Associates', order: 5 },
+          { id: '6', category: 'associates', titleCategory: 'Associates', order: 6 },
+          { id: '7', category: 'legal-staff', titleCategory: 'Legal Staff', order: 7 },
+        ]);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    }
+
+    fetchCategories();
+  }, []);
+
+  // Fetch all profiles once when categories are loaded
+  useEffect(() => {
+    async function fetchAllProfiles() {
+      if (categoriesLoading) return;
+
       setLoading(true);
       setError('');
       try {
+        // Always fetch all profiles (no category filter)
         const params = new URLSearchParams();
-        if (activeFilter && activeFilter !== 'all') {
-          params.set('category', activeFilter);
-        }
         params.set('sort', 'order');
 
         const json = await fetchWithCache<{ docs: Profile[]; totalDocs: number }>(
           `/api/cms/profiles?${params.toString()}`
         );
-        // Artificial delay for smoother transition feel (optional, but good for UX to prevent flickering on fast connections)
+        // Artificial delay for smoother transition feel
         await new Promise(resolve => setTimeout(resolve, 300));
-        setProfiles(json.docs || []);
+        const allData = json.docs || [];
+        setAllProfiles(allData);
+        setProfiles(allData); // Initially show all profiles
+
+        // Store in localStorage for profile detail page optimization
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('cachedProfiles', JSON.stringify(allData));
+          localStorage.setItem('profilesCacheTime', Date.now().toString());
+        }
       } catch (err: any) {
         console.error('Error fetching profiles:', err);
-        setError('Gagal memuat data profil.');
+        // Don't show error, use empty arrays
+        setAllProfiles([]);
+        setProfiles([]);
+        setError('');
       } finally {
         setLoading(false);
       }
     }
 
-    fetchProfiles();
-  }, [activeFilter]);
+    fetchAllProfiles();
+  }, [categoriesLoading]);
 
-  const filteredProfiles = useMemo(
-    () =>
-      activeFilter === 'all'
-        ? profiles
-        : profiles.filter((profile) => profile.category === activeFilter),
-    [profiles, activeFilter]
-  );
+  // Filter profiles client-side when activeFilter changes
+  useEffect(() => {
+    if (allProfiles.length === 0) return; // Wait for data to be loaded
+
+    if (activeFilter === 'all') {
+      setProfiles(allProfiles);
+    } else {
+      // Filter profiles that have the selected category
+      const filtered = allProfiles.filter(profile =>
+        profile.categories.includes(activeFilter)
+      );
+      setProfiles(filtered);
+    }
+  }, [activeFilter, allProfiles]);
+
+  // Group profiles by categories from ProfilesCategory sheet
+  const groupedProfiles = useMemo(() => {
+    const groups: Record<string, { category: ProfileCategory; profiles: Profile[] }> = {};
+
+    // Initialize groups for all categories
+    categories.forEach(cat => {
+      groups[cat.category] = {
+        category: cat,
+        profiles: []
+      };
+    });
+
+    // Add 'all' group
+    groups['all'] = {
+      category: { id: 'all', category: 'all', titleCategory: 'All Profiles' },
+      profiles: []
+    };
+
+    // Group profiles by their categories (use allProfiles, not filtered profiles)
+    allProfiles.forEach(profile => {
+      profile.categories.forEach(profileCategory => {
+        if (groups[profileCategory]) {
+          groups[profileCategory].profiles.push(profile);
+        }
+      });
+
+      // Also add to 'all' group
+      groups['all'].profiles.push(profile);
+    });
+
+    // Sort profiles within each group by order
+    Object.values(groups).forEach(group => {
+      group.profiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+      // Remove duplicates in 'all' group
+      if (group.category.category === 'all') {
+        const uniqueProfiles = group.profiles.filter((profile, index, self) =>
+          index === self.findIndex(p => p.id === profile.id)
+        );
+        group.profiles = uniqueProfiles;
+      }
+    });
+
+    return groups;
+  }, [allProfiles, categories]);
+
+  // Get current group data
+  const currentGroup = groupedProfiles[activeFilter] || groupedProfiles['all'];
+
+  // Get current category title and description for display
+  const getCurrentCategoryData = () => {
+    const title = currentGroup?.category.titleCategory || 'Profiles';
+    const description = activeFilter === 'all'
+      ? 'Temukan sosok-sosok di balik tim luar biasa kami. Dengan pengalaman yang luas dan dedikasi terhadap kesuksesan Anda.'
+      : `Tim profesional ${title.toLowerCase()} kami siap membantu Anda dengan keahlian dan pengalaman terbaik.`;
+    return { title, description };
+  };
+
+  const { title: currentCategoryTitle, description: currentCategoryDescription } = getCurrentCategoryData();
 
   return (
     <div
@@ -112,12 +243,11 @@ export default function ProfilesPage() {
                   Our Team
                 </span>
                 <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white uppercase tracking-tight transition-colors duration-300">
-                  Profiles
+                  {currentCategoryTitle}
                 </h1>
               </div>
               <p className="max-w-xl text-slate-600 dark:text-slate-400 text-sm leading-relaxed border-l-2 border-slate-300 dark:border-slate-800 pl-4 transition-colors duration-300">
-                Temukan sosok-sosok di balik tim luar biasa kami. Dengan pengalaman
-                yang luas dan dedikasi terhadap kesuksesan Anda.
+                {currentCategoryDescription}
               </p>
             </div>
           </div>
@@ -127,20 +257,28 @@ export default function ProfilesPage() {
         <div className="sticky top-16 z-40 bg-white/95 dark:bg-slate-950/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex overflow-x-auto no-scrollbar py-0">
-              {filters.map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => setActiveFilter(filter.id)}
-                  className={`
-                    px-6 py-4 text-xs font-bold tracking-widest uppercase transition-all duration-300 border-b-2 whitespace-nowrap
-                    ${activeFilter === filter.id
-                      ? 'border-accent text-slate-900 dark:text-white bg-slate-100 dark:bg-white/5'
-                      : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}
-                  `}
-                >
-                  {filter.label}
-                </button>
-              ))}
+              {filters.map((filter) => {
+                const profileCount = groupedProfiles[filter.id]?.profiles.length || 0;
+                return (
+                  <button
+                    key={filter.id}
+                    onClick={() => setActiveFilter(filter.id)}
+                    className={`
+                      px-6 py-4 text-xs font-bold tracking-widest uppercase transition-all duration-300 border-b-2 whitespace-nowrap
+                      ${activeFilter === filter.id
+                        ? 'border-accent text-slate-900 dark:text-white bg-slate-100 dark:bg-white/5'
+                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}
+                    `}
+                  >
+                    {filter.label}
+                    {profileCount > 0 && (
+                      <span className="ml-1 text-[10px] opacity-60">
+                        ({profileCount})
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -158,10 +296,11 @@ export default function ProfilesPage() {
                 ERROR: {error}
               </div>
             ) : (
-              filteredProfiles.map((profile) => (
-                <div
+              currentGroup.profiles.map((profile) => (
+                <Link
                   key={profile.id}
-                  className="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-accent transition-all duration-300 shadow-sm hover:shadow-xl dark:shadow-none animate-in fade-in zoom-in-95 duration-500"
+                  href={`/profiles/${profile.id}`}
+                  className="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-accent transition-all duration-300 shadow-sm hover:shadow-xl dark:shadow-none animate-in fade-in zoom-in-95 duration-500 block"
                 >
                   {/* Hover Corner Accents */}
                   <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-slate-900 dark:border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -192,22 +331,21 @@ export default function ProfilesPage() {
                       </p>
                       {profile.email && (
                         <div className="border-t border-slate-200 dark:border-white/10 pt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                          <a
-                            href={`mailto:${profile.email}`}
+                          <span
                             className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-mono truncate block"
                           >
                             {profile.email}
-                          </a>
+                          </span>
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>
 
-          {!loading && !error && filteredProfiles.length === 0 && (
+          {!loading && !error && currentGroup.profiles.length === 0 && (
             <div className="text-center py-20 border border-slate-200 dark:border-slate-800 border-dashed">
               <p className="text-slate-500 font-mono">NO_DATA_FOUND</p>
             </div>

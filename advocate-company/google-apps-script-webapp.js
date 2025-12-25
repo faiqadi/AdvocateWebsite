@@ -24,7 +24,10 @@ const SHEET_NAMES = {
   PRACTICE_AREAS: 'PracticeAreas',
   SPECIALISTS: 'Specialists',
   HERO_SLIDES: 'HeroSlides',
-  ABOUT_US: 'AboutUs'
+  ABOUT_US: 'AboutUs',
+  TENTANG_KANTOR: 'TentangKantor',
+  FOUNDERS: 'Founders',
+  PROFILES_CATEGORY: 'ProfilesCategory'
 };
 
 /**

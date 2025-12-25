@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bagus Law Firm - Konsultan Hukum Terpercaya",
-  description: "Bagus Law Firm (BAGUS LAW) - Firma hukum profesional dengan pengalaman lebih dari satu dekade. Menyediakan konsultan hukum terbaik untuk berbagai sektor industri.",
+  title: "ESH Law Office - Konsultan Hukum Terpercaya",
+  description: "ESH Law Office - Firma hukum profesional dengan pengalaman luas. Menyediakan konsultan hukum terbaik untuk berbagai sektor industri.",
 };
 
 export default function RootLayout({

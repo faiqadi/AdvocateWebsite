@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Navigation from '../../components/Navigation';
-import { getPracticeAreaBySlug, getAllPracticeAreas } from '../../../lib/practice-areas-data';
+import { getPracticeAreas } from '../../../lib/cms';
 import ScrollAnimation from '../../components/ScrollAnimation';
 import { getBuildingImage } from '@/lib/building-images';
 
@@ -19,7 +19,8 @@ interface PageProps {
 // Generate metadata dynamically
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const practiceArea = getPracticeAreaBySlug(slug);
+  const practiceAreas = await getPracticeAreas();
+  const practiceArea = practiceAreas.find(area => area.slug === slug);
 
   if (!practiceArea) {
     return {
@@ -29,13 +30,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${practiceArea.title} - Bagus Law Firm`,
-    description: practiceArea.description,
+    description: practiceArea.shortDescription || practiceArea.description,
   };
 }
 
 // Generate static params for all practice areas
 export async function generateStaticParams() {
-  const practiceAreas = getAllPracticeAreas();
+  const practiceAreas = await getPracticeAreas();
   return practiceAreas.map((area) => ({
     slug: area.slug,
   }));
@@ -43,7 +44,8 @@ export async function generateStaticParams() {
 
 export default async function PracticeAreaDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const practiceArea = getPracticeAreaBySlug(slug);
+  const practiceAreas = await getPracticeAreas();
+  const practiceArea = practiceAreas.find(area => area.slug === slug);
 
   if (!practiceArea) {
     notFound();
@@ -125,7 +127,7 @@ export default async function PracticeAreaDetailPage({ params }: PageProps) {
                     Overview
                   </h2>
                   <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {practiceArea.overview}
+                    {practiceArea.overview || practiceArea.description}
                   </p>
                 </section>
               </ScrollAnimation>
@@ -138,7 +140,7 @@ export default async function PracticeAreaDetailPage({ params }: PageProps) {
                     Layanan Kami
                   </h2>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {practiceArea.services.map((service, index) => (
+                    {(practiceArea.services && practiceArea.services.length > 0 ? practiceArea.services : ['Konsultasi hukum', 'Pendampingan proses', 'Dokumentasi legal']).map((service, index) => (
                       <li
                         key={index}
                         className="flex items-start space-x-3 p-4 bg-white/50 dark:bg-slate-900/30 border border-slate-200 dark:border-white/5 hover:border-accent/50 transition-colors"
@@ -171,7 +173,7 @@ export default async function PracticeAreaDetailPage({ params }: PageProps) {
                     Keahlian Kami
                   </h2>
                   <div className="flex flex-wrap gap-3">
-                    {practiceArea.expertise.map((item, index) => (
+                    {(practiceArea.expertise && practiceArea.expertise.length > 0 ? practiceArea.expertise : ['Hukum Nasional', 'Kepatuhan Regulasi', 'Strategi Legal']).map((item, index) => (
                       <span
                         key={index}
                         className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-semibold border border-slate-200 dark:border-slate-700 hover:border-accent hover:text-accent transition-colors uppercase tracking-wider text-xs"
@@ -240,3 +242,4 @@ export default async function PracticeAreaDetailPage({ params }: PageProps) {
     </div>
   );
 }
+
