@@ -121,11 +121,7 @@ export default function ContactPage() {
                       </li>
                       <li>
                         <span className="block text-xs text-slate-500 uppercase">Email</span>
-                        <a href="mailto:info@baguslawfirm.com" className="text-slate-900 dark:text-white font-mono hover:text-accent transition-colors">info@baguslawfirm.com</a>
-                      </li>
-                      <li>
-                        <span className="block text-xs text-slate-500 uppercase">Office</span>
-                        <a href="tel:0241234567" className="text-slate-900 dark:text-white font-mono hover:text-accent transition-colors">024-1234567</a>
+                        <a href="mailto:info@eshlaw.com" className="text-slate-900 dark:text-white font-mono hover:text-accent transition-colors">info@eshlaw.com</a>
                       </li>
                     </ul>
                   </div>

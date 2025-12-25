@@ -159,75 +159,7 @@ export default function PracticeAreasPage() {
         {/* Dynamic Footer Section */}
         <div className="border-t border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm py-16 relative z-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            {!loading && !error && practiceAreas.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-12">
-                {/* Practice Areas Summary */}
-                <ScrollAnimation direction="left">
-                  <div>
-                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-tight">
-                      Layanan Kami
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3 mb-6">
-                      {practiceAreas.slice(0, 6).map((area, index) => (
-                        <Link
-                          key={area.id}
-                          href={`/practice-areas/${area.slug}`}
-                          className="text-sm text-slate-600 dark:text-slate-400 hover:text-accent transition-colors font-medium"
-                        >
-                          {area.title}
-                        </Link>
-                      ))}
-                      {practiceAreas.length > 6 && (
-                        <span className="text-sm text-slate-500 dark:text-slate-500 font-mono">
-                          +{practiceAreas.length - 6} lainnya
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Kami menyediakan {practiceAreas.length} bidang praktik hukum spesialis untuk memenuhi berbagai kebutuhan klien kami.
-                    </p>
-                  </div>
-                </ScrollAnimation>
 
-                {/* Statistics */}
-                <ScrollAnimation direction="right">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="text-center">
-                      <div className="text-3xl md:text-4xl font-bold text-accent mb-2">
-                        {practiceAreas.length}
-                      </div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wider font-mono">
-                        Bidang Praktik
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl md:text-4xl font-bold text-accent mb-2">
-                        10+
-                      </div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wider font-mono">
-                        Tahun Pengalaman
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl md:text-4xl font-bold text-accent mb-2">
-                        24/7
-                      </div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wider font-mono">
-                        Layanan Konsultasi
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl md:text-4xl font-bold text-accent mb-2">
-                        ✓
-                      </div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wider font-mono">
-                        Legal Support
-                      </div>
-                    </div>
-                  </div>
-                </ScrollAnimation>
-              </div>
-            )}
 
             {/* Consultation CTA */}
             <div className="text-center">

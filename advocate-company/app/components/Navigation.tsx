@@ -166,8 +166,8 @@ export default function Navigation({ variant = 'default' }: NavigationProps) {
           <span className="md:hidden lg:inline">PACUAN KUDA RAYA NO. 6</span>
         </div>
         <div className="flex gap-4 md:gap-6 relative z-10 justify-between w-full md:w-auto">
-          <a href="tel:+622122868539" className="hover:text-white transition-colors flex items-center gap-2">
-            <span>[T]</span> +62 (21) 2286-8539
+          <a href="tel:6285703444000" className="hover:text-white transition-colors flex items-center gap-2">
+            <span>[T]</span> +62 857-0344-4000
           </a>
           <span className="text-slate-700 hidden md:inline">|</span>
           <a href="mailto:info@eshlaw.com" className="hover:text-white transition-colors flex items-center gap-2">
@@ -185,18 +185,18 @@ export default function Navigation({ variant = 'default' }: NavigationProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="group flex flex-row items-center gap-3 relative pl-4">
+              <Link href="/" className="group flex flex-row items-center gap-0 relative pl-2">
                 {/* Logo Accent Marker - Optional now that we have an image, but kept for style if needed, or removed. I'll remove the old marker code if it conflicts, but here I'm replacing the whole Link content structure. */}
 
-                <div className="relative h-10 w-10 md:h-12 md:w-12 shrink-0">
+                <div className="relative h-20 w-20 md:h-32 md:w-32 shrink-0">
                   <img
-                    src="/esh-logo.png"
+                    src="/logoESH.png"
                     alt="ESH Law Office"
-                    className="h-full w-full object-contain brightness-0 invert dark:invert-0 transition-all group-hover:scale-105"
+                    className="h-full w-full object-contain brightness-100 transition-all group-hover:scale-125"
                   />
                 </div>
 
-                <div className="flex items-baseline gap-2">
+                <div className="flex flex-col items-center md:items-start">
                   <span className={`text-xl md:text-2xl font-bold tracking-tighter leading-none transition-colors ${getTextColorClass()}`}>
                     ESH
                   </span>

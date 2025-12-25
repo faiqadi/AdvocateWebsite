@@ -1,25 +1,40 @@
-import Link from 'next/link';
+'use client';
 
-const practiceAreas = [
-  'Antimonopoli dan Perdagangan Internasional',
-  'Litigasi and Alternative Dispute Resolution',
-  'PKPU dan Kepailitan',
-  'Perumahan dan Aset',
-  'Pembiayaan Keuangan',
-  'Minyak & Gas',
-  'Merger dan Akuisisi',
-  'Keuangan Syariah',
-  'Investasi',
-  'Teknologi Informasi, E-commerce, Media and Telekomunikasi',
-  'Kesehatan',
-  'Perkebunan',
-  'Kejahatan Penipuan dan Investigasi Forensik',
-  'Lingkungan',
-  'Energi, Infrastruktur dan Sumber Daya Mineral',
-  'Korporasi dan Komersial',
-];
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { fetchWithCache } from '@/lib/cache-client';
+
+interface PracticeArea {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+}
 
 export default function Footer() {
+  const [practiceAreas, setPracticeAreas] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPracticeAreas() {
+      try {
+        const json = await fetchWithCache<{ docs: PracticeArea[]; totalDocs: number }>(
+          '/api/cms/practice-areas'
+        );
+        const areas = json.docs || [];
+        setPracticeAreas(areas.map(a => a.title));
+      } catch (error) {
+        console.error('Error fetching practice areas for footer:', error);
+        // Fallback or empty on error
+        setPracticeAreas([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPracticeAreas();
+  }, []);
+
   return (
     <footer className="bg-slate-950 text-white border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
@@ -41,21 +56,25 @@ export default function Footer() {
           {/* Practice Areas */}
           <div className="md:col-span-5">
             <h3 className="text-sm font-bold mb-6 tracking-widest uppercase text-slate-500">Practice Areas</h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm text-slate-400">
-              {practiceAreas.slice(0, 10).map((area, index) => (
-                <li key={index}>
-                  <Link
-                    href="/practice-areas"
-                    className="hover:text-accent transition-colors block py-1 border-b border-transparent hover:border-slate-800"
-                  >
-                    {area}
-                  </Link>
+            {loading ? (
+              <div className="text-xs text-slate-500 font-mono">LOADING...</div>
+            ) : (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm text-slate-400">
+                {practiceAreas.slice(0, 10).map((area, index) => (
+                  <li key={index}>
+                    <Link
+                      href="/practice-areas"
+                      className="hover:text-accent transition-colors block py-1 border-b border-transparent hover:border-slate-800"
+                    >
+                      {area}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/practice-areas" className="text-accent hover:text-white font-bold mt-2 inline-block">View All Areas →</Link>
                 </li>
-              ))}
-              <li>
-                <Link href="/practice-areas" className="text-accent hover:text-white font-bold mt-2 inline-block">View All Areas →</Link>
-              </li>
-            </ul>
+              </ul>
+            )}
           </div>
 
           {/* Contact Info */}
@@ -64,7 +83,7 @@ export default function Footer() {
             <div className="space-y-4 text-sm text-slate-400">
               <div>
                 <span className="block text-xs font-mono text-slate-600 uppercase mb-1">Helpline</span>
-                <a href="tel:+621234567890" className="text-white hover:text-accent text-lg font-bold block transition-colors">+62 123 456 7890</a>
+                <a href="tel:6285703444000" className="text-white hover:text-accent text-lg font-bold block transition-colors">+62 857-0344-4000</a>
               </div>
               <div className="h-[1px] bg-slate-900"></div>
               <div className="grid grid-cols-2 gap-4">

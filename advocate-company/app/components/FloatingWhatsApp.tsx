@@ -4,9 +4,9 @@ import { useState } from 'react';
 
 export default function FloatingWhatsApp() {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   // WhatsApp number - replace with actual number
-  const whatsappNumber = '621234567890'; // Format: country code + number without + or spaces
+  const whatsappNumber = '6285703444000'; // Format: country code + number without + or spaces
   const whatsappMessage = encodeURIComponent('Halo, saya ingin berkonsultasi dengan Bagus Law Firm.');
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
@@ -28,7 +28,7 @@ export default function FloatingWhatsApp() {
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-l-gray-900"></div>
           </div>
         )}
-        
+
         {/* WhatsApp Button */}
         <div className="bg-green-500 hover:bg-green-600 rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center">
           <svg
