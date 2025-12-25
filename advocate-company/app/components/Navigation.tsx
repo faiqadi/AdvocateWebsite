@@ -170,8 +170,8 @@ export default function Navigation({ variant = 'default' }: NavigationProps) {
             <span>[T]</span> +62 857-0344-4000
           </a>
           <span className="text-slate-700 hidden md:inline">|</span>
-          <a href="mailto:info@eshlaw.com" className="hover:text-white transition-colors flex items-center gap-2">
-            <span>[M]</span> INFO@ESHLAW.COM
+          <a href="mailto:info@eshlaw.id" className="hover:text-white transition-colors flex items-center gap-2">
+            <span>[M]</span> INFO@ESHLAW.ID
           </a>
         </div>
       </div>

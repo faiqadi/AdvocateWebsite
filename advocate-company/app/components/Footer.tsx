@@ -99,7 +99,7 @@ export default function Footer() {
               <div className="h-[1px] bg-slate-900"></div>
               <div>
                 <span className="block text-xs font-mono text-slate-600 uppercase mb-1">Email Inquiry</span>
-                <a href="mailto:info@eshlaw.com" className="hover:text-white transition-colors">info@eshlaw.com</a>
+                <a href="mailto:info@eshlaw.id" className="hover:text-white transition-colors">info@eshlaw.id</a>
               </div>
             </div>
           </div>
