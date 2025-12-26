@@ -37,16 +37,16 @@ function doGet(e) {
   try {
     const sheetName = e.parameter.sheet || e.parameter.sheetName;
     const action = e.parameter.action || 'get';
-    
+
     if (!sheetName) {
       return createErrorResponse(400, 'Sheet name is required');
     }
-    
+
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
     if (!sheet) {
       return createErrorResponse(404, `Sheet "${sheetName}" not found`);
     }
-    
+
     switch (action) {
       case 'get':
         return getSheetData(sheet, sheetName, e.parameter);
@@ -67,16 +67,16 @@ function doPost(e) {
   try {
     const requestData = JSON.parse(e.postData.contents);
     const { sheet, action, data } = requestData;
-    
+
     if (!sheet) {
       return createErrorResponse(400, 'Sheet name is required');
     }
-    
+
     const targetSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheet);
     if (!targetSheet) {
       return createErrorResponse(404, `Sheet "${sheet}" not found`);
     }
-    
+
     switch (action) {
       case 'append':
         return appendRow(targetSheet, data);
@@ -98,7 +98,7 @@ function doPost(e) {
 function getSheetData(sheet, sheetName, params) {
   const [, ...rows] = sheet.getDataRange().getValues();
   const headers = sheet.getDataRange().getValues()[0];
-  
+
   // Convert rows to objects
   let data = rows.map(row => {
     const obj = {};
@@ -107,16 +107,16 @@ function getSheetData(sheet, sheetName, params) {
     });
     return obj;
   });
-  
+
   // Apply filters
   if (params.category) {
     data = data.filter(item => item.category === params.category);
   }
-  
+
   if (params.status) {
     data = data.filter(item => item.status === params.status);
   }
-  
+
   if (params.active !== undefined) {
     const activeValue = params.active === 'true' || params.active === true;
     data = data.filter(item => {
@@ -124,7 +124,7 @@ function getSheetData(sheet, sheetName, params) {
       return itemActive === activeValue;
     });
   }
-  
+
   // Sort
   if (params.sort) {
     if (params.sort === 'order') {
@@ -133,12 +133,12 @@ function getSheetData(sheet, sheetName, params) {
       data.sort((a, b) => new Date(b.publishedDate || 0) - new Date(a.publishedDate || 0));
     }
   }
-  
+
   // Limit
   if (params.limit) {
     data = data.slice(0, parseInt(params.limit));
   }
-  
+
   return createSuccessResponse({
     sheet: sheetName,
     count: data.length,
@@ -152,18 +152,18 @@ function getSheetData(sheet, sheetName, params) {
 function getSheetDataById(sheet, id) {
   const [, ...rows] = sheet.getDataRange().getValues();
   const headers = sheet.getDataRange().getValues()[0];
-  
+
   const row = rows.find(row => row[headers.indexOf('id')] === id);
-  
+
   if (!row) {
     return createErrorResponse(404, 'Item not found');
   }
-  
+
   const obj = {};
   headers.forEach((header, index) => {
     obj[header] = row[index] || '';
   });
-  
+
   return createSuccessResponse({ data: obj });
 }
 
@@ -173,9 +173,9 @@ function getSheetDataById(sheet, id) {
 function appendRow(sheet, rowData) {
   const headers = sheet.getDataRange().getValues()[0];
   const newRow = headers.map(header => rowData[header] || '');
-  
+
   sheet.appendRow(newRow);
-  
+
   return createSuccessResponse({
     message: 'Row added successfully',
     data: rowData
@@ -189,16 +189,16 @@ function updateRow(sheet, id, rowData) {
   const [, ...rows] = sheet.getDataRange().getValues();
   const headers = sheet.getDataRange().getValues()[0];
   const idIndex = headers.indexOf('id');
-  
+
   const rowIndex = rows.findIndex(row => row[idIndex] === id);
-  
+
   if (rowIndex === -1) {
     return createErrorResponse(404, 'Item not found');
   }
-  
+
   const updatedRow = headers.map(header => rowData[header] !== undefined ? rowData[header] : rows[rowIndex][headers.indexOf(header)]);
   sheet.getRange(rowIndex + 2, 1, 1, headers.length).setValues([updatedRow]);
-  
+
   return createSuccessResponse({
     message: 'Row updated successfully',
     data: rowData
@@ -212,15 +212,15 @@ function deleteRow(sheet, id) {
   const [, ...rows] = sheet.getDataRange().getValues();
   const headers = sheet.getDataRange().getValues()[0];
   const idIndex = headers.indexOf('id');
-  
+
   const rowIndex = rows.findIndex(row => row[idIndex] === id);
-  
+
   if (rowIndex === -1) {
     return createErrorResponse(404, 'Item not found');
   }
-  
+
   sheet.deleteRow(rowIndex + 2);
-  
+
   return createSuccessResponse({
     message: 'Row deleted successfully'
   });
@@ -236,12 +236,7 @@ function createSuccessResponse(data) {
       success: true,
       ...data
     }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    });
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 /**
@@ -254,25 +249,6 @@ function createErrorResponse(code, message) {
       success: false,
       message: message
     }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    });
-}
-
-/**
- * Handle OPTIONS request for CORS preflight
- */
-function doOptions() {
-  return ContentService
-    .createTextOutput('')
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    });
+    .setMimeType(ContentService.MimeType.JSON);
 }
 

@@ -4,7 +4,8 @@
  */
 
 // Web App URL from environment variable
-const WEB_APP_URL = process.env.GOOGLE_WEB_APP_URL || '';
+// Fallback to GOOGLE_WEB_APP_URL for build time if NEXT_PUBLIC_ is not set
+const WEB_APP_URL = process.env.NEXT_PUBLIC_GOOGLE_WEB_APP_URL || process.env.GOOGLE_WEB_APP_URL || '';
 
 console.log('GOOGLE_WEB_APP_URL status:', WEB_APP_URL ? 'SET' : 'NOT SET');
 
@@ -14,8 +15,10 @@ console.log('GOOGLE_WEB_APP_URL status:', WEB_APP_URL ? 'SET' : 'NOT SET');
 export async function getSheetData(sheetName: string, params?: Record<string, string>): Promise<any[]> {
   try {
     if (!WEB_APP_URL) {
-      console.error('GOOGLE_WEB_APP_URL not set in environment variables');
-      throw new Error('GOOGLE_WEB_APP_URL is not configured. Please set it in .env.local file.');
+      console.error('NEXT_PUBLIC_GOOGLE_WEB_APP_URL not set in environment variables');
+      // Return empty array instead of throwing error to allow build to continue
+      // This is critical for static export if env var is missing in some environments
+      return [];
     }
 
     // Build query parameters
@@ -25,15 +28,43 @@ export async function getSheetData(sheetName: string, params?: Record<string, st
       ...params,
     });
 
-    const response = await fetch(`${WEB_APP_URL}?${queryParams.toString()}`, {
+    const url = `${WEB_APP_URL}?${queryParams.toString()}`;
+
+    // Use caching for GET requests if running in browser
+    if (typeof window !== 'undefined') {
+      const { fetchWithCache } = await import('./cache-client');
+      const response = await fetchWithCache<any>(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      // cache-client returns the parsed JSON directly, but our code below expects to handle the response object structure logic
+      // However, fetchWithCache returns the data directly.
+      // Let's adjust to match the structure expected by the rest of this function or return directly.
+
+      // The fetchWithCache implementation returns the response.json(). 
+      // The current implementation below expects to check response.ok and then parse json
+      // So 'response' here is actually the 'result' object from below (success, data, etc)
+
+      if (!response.success) {
+        console.error(`Error from Web App: ${response.message}`);
+        return [];
+      }
+      return response.data || [];
+    }
+
+    // Server-side fallback (build time)
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
       },
     });
-    
+
     if (!response.ok) {
-      console.error(`HTTP error! status: ${response.status}`);
+      console.error(`[getSheetData] Fetch failed: ${response.status} ${response.statusText}`);
       return [];
     }
 

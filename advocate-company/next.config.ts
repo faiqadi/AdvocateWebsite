@@ -23,7 +23,9 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 3600, // Increase cache to 1 hour
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: true,
   },
+  output: 'export',
   // Enable compression
   compress: true,
   // Optimize production builds

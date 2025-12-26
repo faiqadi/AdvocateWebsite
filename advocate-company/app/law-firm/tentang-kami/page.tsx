@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Navigation from '../../components/Navigation';
 import Link from 'next/link';
 import ScrollAnimation from '../../components/ScrollAnimation';
-import { fetchWithCache } from '@/lib/cache-client';
+import { getAboutUs } from '@/lib/cms';
 import { getBuildingImage } from '@/lib/building-images';
 
 // Lazy load Footer since it's at the bottom
@@ -54,10 +54,8 @@ export default function TentangKamiPage() {
     async function fetchAboutUs() {
       setLoading(true);
       try {
-        const json = await fetchWithCache<{ docs: AboutUs[]; totalDocs: number }>(
-          '/api/cms/about-us'
-        );
-        setContent(json.docs.length > 0 ? json.docs : defaultContent);
+        const docs = await getAboutUs();
+        setContent(docs.length > 0 ? docs : defaultContent);
       } catch (error) {
         console.error('Error fetching about us:', error);
         // Use default content on error

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Navigation from '../components/Navigation';
 import type { Profile } from '@/lib/cms';
-import { fetchWithCache } from '@/lib/cache-client';
+import { getProfiles, getProfileCategories } from '@/lib/cms';
 import { getBuildingImage } from '@/lib/building-images';
 
 interface ProfileCategory {
@@ -64,11 +64,8 @@ export default function ProfilesPage() {
     async function fetchCategories() {
       setCategoriesLoading(true);
       try {
-        const json = await fetchWithCache<{ docs: ProfileCategory[]; totalDocs: number }>(
-          '/api/cms/profile-categories'
-        );
-        const cats = json.docs || [];
-        // Fallback to default categories if API fails
+        const cats = await getProfileCategories();
+        // Fallback to default categories if API fails or returns empty
         setCategories(cats.length > 0 ? cats : [
           { id: '1', category: 'managing-partners', titleCategory: 'Managing Partners', order: 1 },
           { id: '2', category: 'partners', titleCategory: 'Partners', order: 2 },
@@ -107,15 +104,10 @@ export default function ProfilesPage() {
       setError('');
       try {
         // Always fetch all profiles (no category filter)
-        const params = new URLSearchParams();
-        params.set('sort', 'order');
-
-        const json = await fetchWithCache<{ docs: Profile[]; totalDocs: number }>(
-          `/api/cms/profiles?${params.toString()}`
-        );
+        const allData = await getProfiles({ sort: 'order' });
         // Artificial delay for smoother transition feel
         await new Promise(resolve => setTimeout(resolve, 300));
-        const allData = json.docs || [];
+
         setAllProfiles(allData);
         setProfiles(allData); // Initially show all profiles
 

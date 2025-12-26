@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Navigation from '../../components/Navigation';
 import Link from 'next/link';
+import { getArticles } from '@/lib/cms';
 import type { Article } from '@/lib/cms';
-import { fetchWithCache } from '@/lib/cache-client';
 import ScrollAnimation from '../../components/ScrollAnimation';
 
 // Lazy load Footer since it's at the bottom
@@ -23,10 +23,8 @@ export default function NewsPage() {
       setLoading(true);
       setError('');
       try {
-        const json = await fetchWithCache<{ docs: Article[]; totalDocs: number }>(
-          '/api/cms/news?status=active&sort=-publishedDate'
-        );
-        setNews(json.docs || []);
+        const docs = await getArticles({ status: 'active', sort: '-publishedDate' });
+        setNews(docs);
       } catch (err: any) {
         console.error('Error fetching news:', err);
         setError('Gagal memuat berita.');

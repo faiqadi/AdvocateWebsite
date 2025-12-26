@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getProfileById } from '@/lib/cms';
+import { getProfileById, getProfiles } from '@/lib/cms';
 import { getBuildingImage } from '@/lib/building-images';
 import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
@@ -10,29 +10,29 @@ import Footer from '@/app/components/Footer';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 function getProfileFromCache(id: string) {
-  if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined') return null;
 
-  try {
-    const cachedData = localStorage.getItem('cachedProfiles');
-    const cacheTime = localStorage.getItem('profilesCacheTime');
+    try {
+        const cachedData = localStorage.getItem('cachedProfiles');
+        const cacheTime = localStorage.getItem('profilesCacheTime');
 
-    if (!cachedData || !cacheTime) return null;
+        if (!cachedData || !cacheTime) return null;
 
-    // Check if cache is still valid
-    const cacheAge = Date.now() - parseInt(cacheTime);
-    if (cacheAge > CACHE_DURATION) {
-      // Clear expired cache
-      localStorage.removeItem('cachedProfiles');
-      localStorage.removeItem('profilesCacheTime');
-      return null;
+        // Check if cache is still valid
+        const cacheAge = Date.now() - parseInt(cacheTime);
+        if (cacheAge > CACHE_DURATION) {
+            // Clear expired cache
+            localStorage.removeItem('cachedProfiles');
+            localStorage.removeItem('profilesCacheTime');
+            return null;
+        }
+
+        const profiles = JSON.parse(cachedData);
+        return profiles.find((p: any) => p.id === id) || null;
+    } catch (error) {
+        console.error('Error reading from cache:', error);
+        return null;
     }
-
-    const profiles = JSON.parse(cachedData);
-    return profiles.find((p: any) => p.id === id) || null;
-  } catch (error) {
-    console.error('Error reading from cache:', error);
-    return null;
-  }
 }
 
 interface PageProps {
@@ -43,6 +43,14 @@ interface PageProps {
 
 const FALLBACK_PHOTO =
     'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop';
+
+// Generate static params for all profiles
+export async function generateStaticParams() {
+    const profiles = await getProfiles();
+    return profiles.map((profile) => ({
+        id: profile.id,
+    }));
+}
 
 export default async function ProfileDetailPage({ params }: PageProps) {
     // Unwrap params Promise (Next.js 15+ requirement)

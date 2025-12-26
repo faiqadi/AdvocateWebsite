@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Navigation from '../../components/Navigation';
 import Link from 'next/link';
+import { getArticles } from '@/lib/cms';
 import type { Article } from '@/lib/cms';
-import { fetchWithCache } from '@/lib/cache-client';
 import ScrollAnimation from '../../components/ScrollAnimation';
 
 // Lazy load Footer since it's at the bottom
@@ -23,10 +23,8 @@ export default function ArticlesPage() {
       setLoading(true);
       setError('');
       try {
-        const json = await fetchWithCache<{ docs: Article[]; totalDocs: number }>(
-          '/api/cms/articles?category=articles&status=active&sort=-publishedDate'
-        );
-        setArticles(json.docs || []);
+        const docs = await getArticles({ category: 'articles', status: 'active', sort: '-publishedDate' });
+        setArticles(docs);
       } catch (err: any) {
         console.error('Error fetching articles:', err);
         setError('Gagal memuat artikel.');

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { fetchWithCache } from '@/lib/cache-client';
+import { getPracticeAreas } from '@/lib/cms';
 
 interface PracticeArea {
   id: string;
@@ -18,11 +18,8 @@ export default function Footer() {
   useEffect(() => {
     async function fetchPracticeAreas() {
       try {
-        const json = await fetchWithCache<{ docs: PracticeArea[]; totalDocs: number }>(
-          '/api/cms/practice-areas'
-        );
-        const areas = json.docs || [];
-        setPracticeAreas(areas.map(a => a.title));
+        const data: PracticeArea[] = await getPracticeAreas();
+        setPracticeAreas(data.map(area => area.title));
       } catch (error) {
         console.error('Error fetching practice areas for footer:', error);
         // Fallback or empty on error

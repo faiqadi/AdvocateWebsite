@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import ScrollAnimation from './ScrollAnimation';
 import { getBuildingImage } from '@/lib/building-images';
-import { fetchWithCache } from '@/lib/cache-client';
+import { getTentangKantor } from '@/lib/cms';
 
 // Helper function to process content with // separators
 function processContent(content: string): string {
@@ -52,12 +52,10 @@ export default function TentangKantorSection() {
       setLoading(true);
       setError('');
       try {
-        const json = await fetchWithCache<{ docs: TentangKantor[]; totalDocs: number }>(
-          '/api/cms/tentang-kantor'
-        );
+        const docs = await getTentangKantor();
         // Artificial delay for smoother transition feel
         await new Promise(resolve => setTimeout(resolve, 300));
-        setKantorData(json.docs || []);
+        setKantorData(docs);
       } catch (err: any) {
         console.error('Error fetching tentang kantor:', err);
         // Don't show error, just use fallback data

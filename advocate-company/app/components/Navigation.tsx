@@ -4,14 +4,9 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
-import { fetchWithCache } from '@/lib/cache-client';
+import { getPracticeAreas } from '@/lib/cms';
 
-interface PracticeArea {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-}
+import type { PracticeArea } from '@/lib/cms';
 
 interface SubMenuItem {
   name: string;
@@ -59,10 +54,7 @@ export default function Navigation({ variant = 'default' }: NavigationProps) {
   useEffect(() => {
     async function fetchPracticeAreasMenu() {
       try {
-        const json = await fetchWithCache<{ docs: PracticeArea[]; totalDocs: number }>(
-          '/api/cms/practice-areas'
-        );
-        const areas = json.docs || [];
+        const areas = await getPracticeAreas();
         console.log('Practice Areas Navigation Data:', areas.map(a => ({ title: a.title, order: a.order })));
         setPracticeAreas(areas);
       } catch (error) {

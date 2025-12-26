@@ -122,9 +122,9 @@ export async function fetchWithCache<T>(
   // Fetch from API
   const response = await fetch(url, {
     ...options,
+    redirect: 'follow',
     headers: {
       ...options?.headers,
-      'Cache-Control': 'no-cache',
     },
   });
 

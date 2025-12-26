@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getBuildingImage } from '@/lib/building-images';
 import ScrollAnimation from '../components/ScrollAnimation';
 import type { PracticeArea } from '@/lib/cms';
-import { fetchWithCache } from '@/lib/cache-client';
+import { getPracticeAreas } from '@/lib/cms';
 
 // Lazy load Footer since it's at the bottom
 const Footer = dynamic(() => import('../components/Footer'), {
@@ -40,12 +40,7 @@ export default function PracticeAreasPage() {
       setLoading(true);
       setError('');
       try {
-        const json = await fetchWithCache<{ docs: PracticeArea[]; totalDocs: number }>(
-          '/api/cms/practice-areas'
-        );
-        // Artificial delay for smoother transition feel
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const areas = json.docs || [];
+        const areas = await getPracticeAreas();
         console.log('Practice Areas Footer Data:', areas.map(a => ({ title: a.title, order: a.order })));
         setPracticeAreas(areas);
       } catch (err: any) {

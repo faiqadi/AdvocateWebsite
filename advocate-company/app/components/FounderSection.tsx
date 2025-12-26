@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ScrollAnimation from './ScrollAnimation';
 import { getBuildingImage } from '@/lib/building-images';
-import { fetchWithCache } from '@/lib/cache-client';
+import { getFounders } from '@/lib/cms';
 
 interface Founder {
   id: string;
@@ -28,12 +28,10 @@ export default function FounderSection() {
       setLoading(true);
       setError('');
       try {
-        const json = await fetchWithCache<{ docs: Founder[]; totalDocs: number }>(
-          '/api/cms/founders'
-        );
+        const docs = await getFounders();
         // Artificial delay for smoother transition feel
         await new Promise(resolve => setTimeout(resolve, 300));
-        setFounders(json.docs || []);
+        setFounders(docs);
       } catch (err: any) {
         console.error('Error fetching founders:', err);
         // Don't show error for founders, just use empty array

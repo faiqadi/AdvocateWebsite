@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Navigation from '../components/Navigation';
 import Link from 'next/link';
+import { getArticles } from '@/lib/cms';
 import type { Article } from '@/lib/cms';
-import { fetchWithCache } from '@/lib/cache-client';
 import ScrollAnimation from '../components/ScrollAnimation';
 
 // Lazy load Footer since it's at the bottom
@@ -26,10 +26,13 @@ export default function KnowledgeCenterPage() {
       setLoadingArticles(true);
       setErrorArticles('');
       try {
-        const json = await fetchWithCache<{ docs: Article[]; totalDocs: number }>(
-          '/api/cms/articles?category=articles&status=active&sort=-publishedDate&limit=5'
-        );
-        setArticles(json.docs || []);
+        const docs = await getArticles({
+          category: 'articles',
+          status: 'active',
+          sort: '-publishedDate',
+          limit: 5
+        });
+        setArticles(docs);
       } catch (err: any) {
         console.error('Error fetching articles:', err);
         setErrorArticles('Gagal memuat artikel.');
@@ -42,10 +45,13 @@ export default function KnowledgeCenterPage() {
       setLoadingNews(true);
       setErrorNews('');
       try {
-        const json = await fetchWithCache<{ docs: Article[]; totalDocs: number }>(
-          '/api/cms/news?status=active&sort=-publishedDate&limit=5'
-        );
-        setNews(json.docs || []);
+        const docs = await getArticles({
+          category: 'news',
+          status: 'active',
+          sort: '-publishedDate',
+          limit: 5
+        });
+        setNews(docs);
       } catch (err: any) {
         console.error('Error fetching news:', err);
         setErrorNews('Gagal memuat berita.');
