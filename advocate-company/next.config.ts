@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
   // Optimize production builds
   // Experimental features for better performance
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Disabled to prevent build conflicts with Tailwind v4
   },
 };
 
