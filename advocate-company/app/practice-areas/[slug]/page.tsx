@@ -36,10 +36,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 // Generate static params for all practice areas
 export async function generateStaticParams() {
-  const practiceAreas = await getPracticeAreas();
-  return practiceAreas.map((area) => ({
-    slug: area.slug,
-  }));
+  try {
+    const practiceAreas = await getPracticeAreas();
+    if (practiceAreas && practiceAreas.length > 0) {
+      return practiceAreas.map((area) => ({
+        slug: area.slug,
+      }));
+    }
+  } catch (error) {
+    console.warn('Error fetching practice areas for params, using fallback');
+  }
+
+  // Fallback to prevent build errors
+  return [{ slug: 'coming-soon' }];
 }
 
 export default async function PracticeAreaDetailPage({ params }: PageProps) {

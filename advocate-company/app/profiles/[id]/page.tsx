@@ -46,10 +46,19 @@ const FALLBACK_PHOTO =
 
 // Generate static params for all profiles
 export async function generateStaticParams() {
-    const profiles = await getProfiles();
-    return profiles.map((profile) => ({
-        id: profile.id,
-    }));
+    try {
+        const profiles = await getProfiles();
+        if (profiles && profiles.length > 0) {
+            return profiles.map((profile) => ({
+                id: profile.id,
+            }));
+        }
+    } catch (error) {
+        console.warn('Error fetching profiles for params, using fallback');
+    }
+
+    // Fallback to prevent build errors. Use '1' as a safe placeholder ID
+    return [{ id: '1' }];
 }
 
 export default async function ProfileDetailPage({ params }: PageProps) {
